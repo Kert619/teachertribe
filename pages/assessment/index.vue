@@ -1,6 +1,5 @@
 <template>
-  <div class="space-y-3">
-    <h4 class="font-bold">Dashboard</h4>
+  <PageContent title="Dashboard">
     <div class="flex justify-between items-center">
       <NuxtLink class="underline">Add New Assessment</NuxtLink>
       <div class="space-x-3">
@@ -13,10 +12,11 @@
         </select>
       </div>
     </div>
+
+    <hr class="mt-3" />
+
     <AssessmentList />
-  </div>
+  </PageContent>
 </template>
 
 <script setup lang="ts"></script>
-
-<style scoped></style>

@@ -2,11 +2,16 @@
   <div class="flex flex-col gap-3 h-screen">
     <TheHeader />
 
-    <div class="p-5 container shadow-normal grow overflow-auto bg-white">
-      <div class="mb-3">
+    <div
+      class="container shadow-normal grow bg-white overflow-auto flex flex-col gap-3"
+    >
+      <div class="p-5 pb-0">
         <Tab />
       </div>
-      <slot></slot>
+
+      <div class="grow overflow-auto p-5 pt-0">
+        <slot></slot>
+      </div>
     </div>
 
     <TheFooter />

@@ -23,3 +23,13 @@
     font-family: "Inter", sans-serif;
   }
 }
+
+@layer components {
+  .btn {
+    @apply rounded-none;
+  }
+
+  .btn-primary {
+    @apply bg-primary-500 border-primary-500 outline-primary-500 text-white hover:bg-primary-800 hover:border-primary-500;
+  }
+}
