@@ -9,7 +9,7 @@
         <Tab />
       </div>
 
-      <div class="grow overflow-auto p-5 pt-0">
+      <div ref="pageRef" class="grow overflow-auto p-5 pt-0">
         <slot></slot>
       </div>
     </div>
@@ -17,3 +17,15 @@
     <TheFooter />
   </div>
 </template>
+
+<script setup lang="ts">
+const pageRef = ref<HTMLElement | null>(null);
+const route = useRoute();
+
+watch(
+  () => route.path,
+  () => {
+    if (pageRef.value) pageRef.value.scrollTo(0, 0);
+  }
+);
+</script>

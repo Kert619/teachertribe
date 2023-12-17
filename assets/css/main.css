@@ -25,7 +25,10 @@
 }
 
 @layer components {
-  .btn {
+  .btn,
+  .input,
+  .select,
+  .textarea {
     @apply rounded-none;
   }
 

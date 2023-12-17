@@ -11,10 +11,18 @@
         <button class="btn btn-ghost">
           <IconSettings width="24" height="24" />
         </button>
-        <button class="btn btn-ghost">
+        <button class="btn btn-ghost" @click="logout">
           <IconLogout width="24" height="24" />
         </button>
       </div>
     </div>
   </nav>
 </template>
+
+<script setup lang="ts">
+const authStore = useAuthStore();
+
+const logout = async () => {
+  await authStore.logout();
+};
+</script>
