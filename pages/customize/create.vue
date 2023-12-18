@@ -1,68 +1,30 @@
 <template>
   <div>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-10">
-      <label class="form-control w-full">
-        <div class="label">
-          <span class="label-text">Problem Title</span>
-        </div>
-        <input
-          type="text"
-          placeholder="Type here"
-          class="input input-bordered w-full"
-        />
-      </label>
+      <VTextInput name="problem_title" label="Problem Title" />
 
-      <label class="form-control w-full">
-        <div class="label">
-          <span class="label-text">Exam Type</span>
-        </div>
-        <select class="select select-bordered">
-          <option disabled selected>Select</option>
-        </select>
-      </label>
+      <VSelectInput name="exam_type" label="Exam Type">
+        <option disabled selected value="">Select</option>
+      </VSelectInput>
 
-      <label class="form-control w-full">
-        <div class="label">
-          <span class="label-text">Problem Type</span>
-        </div>
-        <select class="select select-bordered">
-          <option disabled selected>Select</option>
-        </select>
-      </label>
+      <VSelectInput name="problem_type" label="Problem Type">
+        <option disabled selected value="">Select</option>
+      </VSelectInput>
 
-      <label class="form-control">
-        <div class="label">
-          <span class="label-text">Problem Description</span>
-        </div>
-        <textarea class="textarea textarea-bordered h-24"></textarea>
-      </label>
+      <VTextArea name="problem_description" label="Problem Description" />
 
-      <label class="form-control w-full">
-        <div class="label">
-          <span class="label-text">Difficulty</span>
-        </div>
-        <select class="select select-bordered">
-          <option disabled selected>Select</option>
-          <option>Low</option>
-          <option>Medium</option>
-          <option>High</option>
-        </select>
-      </label>
+      <VSelectInput name="difficulty" label="Difficulty">
+        <option disabled selected value="">Select</option>
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="Hight">High</option>
+      </VSelectInput>
 
-      <label class="form-control w-full">
-        <div class="label">
-          <span class="label-text">Duration (Minutes)</span>
-        </div>
-        <input
-          type="number"
-          placeholder="Type here"
-          class="input input-bordered w-full"
-        />
-      </label>
+      <VTextInput name="duration" label="Duration (Minutes)" type="number" />
     </div>
 
     <ClientOnly>
-      <p class="mb-3">Setup Instruction</p>
+      <p class="mb-3 font-bold">Setup Instruction</p>
       <QuillEditor
         theme="snow"
         toolbar="essential"
