@@ -38,11 +38,8 @@ const loading = ref(false);
 const hasError = ref(false);
 
 const schema = {
-  email: yup
-    .string()
-    .required("Email is required")
-    .email("Must be a valid email"),
-  password: yup.string().required("Password is required"),
+  email: yup.string().required().email().label("Email"),
+  password: yup.string().required().label("Password"),
 };
 
 const submitForm = async (values: any) => {
