@@ -10,7 +10,6 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "@nuxt/devtools": "latest",
     "autoprefixer": "^10.4.16",
     "daisyui": "^4.4.19",
     "nuxt": "^3.8.2",
@@ -24,6 +23,7 @@
     "@vee-validate/nuxt": "^4.12.3",
     "@vee-validate/yup": "^4.12.3",
     "@vueup/vue-quill": "^1.2.0",
-    "pinia": "^2.1.7"
+    "pinia": "^2.1.7",
+    "sweetalert2": "^11.10.1"
   }
 }

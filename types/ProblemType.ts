@@ -1,5 +1,6 @@
-import type { BaseProblemType, BaseExamType } from "./common";
+import type { BaseProblemType, BaseExamType, BaseProblem } from "./common";
 
 export interface ProblemType extends BaseProblemType {
-  examType: BaseExamType;
+  exam_type: BaseExamType;
+  problems: BaseProblem[];
 }

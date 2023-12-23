@@ -1,13 +1,14 @@
-import type { ExamType } from "../types/ExamType";
+import type { ExamType } from "../types//examType";
+
 export const useExamTypeStore = defineStore("examTypeStore", () => {
-  const examTypes = ref<ExamType[] | null>(null);
+  const examTypes = ref<ExamType[]>([]);
 
   const getExamTypes = async () => {
     const nuxtApp = useNuxtApp();
 
     const result = await useAPI<ExamType[]>("/exam-types", {
       getCachedData: (key) =>
-        nuxtApp.static.data[key] || nuxtApp.payload.data[key],
+        nuxtApp.static.data[key] ?? nuxtApp.payload.data[key],
       transform: (data: any) => {
         return data.data as ExamType[];
       },

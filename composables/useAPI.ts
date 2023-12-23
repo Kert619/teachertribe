@@ -15,10 +15,9 @@ export function useAPI<T>(request: string, options: UseFetchOptions<T> = {}) {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  return useFetch(request, {
+  const fetchOptions: UseFetchOptions<T> = {
     baseURL: "http://127.0.0.1:8000/api",
     method: "get",
-    key: request,
     watch: false,
     ...options,
     headers,
@@ -27,5 +26,11 @@ export function useAPI<T>(request: string, options: UseFetchOptions<T> = {}) {
         authStore.reset();
       }
     },
-  });
+  };
+
+  if (fetchOptions.method?.toString().toLowerCase() === "get") {
+    fetchOptions.key = request;
+  }
+
+  return useFetch(request, fetchOptions);
 }

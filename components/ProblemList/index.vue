@@ -1,7 +1,6 @@
 <template>
   <div class="overflow-x-auto">
     <table class="table">
-      <!-- head -->
       <thead>
         <tr>
           <th>#</th>
@@ -13,13 +12,35 @@
       </thead>
       <tbody>
         <ProblemListItem
-          :row="n"
-          problem-title="Sample Problem"
-          exam-type="Javascript"
-          date-created="12/16/23"
-          v-for="n in 10"
+          :row="index + 1"
+          :id="problem.id"
+          :problem-title="problem.problem_title"
+          :exam-type="problem.problem_type.exam_type.exam_type"
+          :date-created="useDateFormat(problem.date_created)"
+          v-for="(problem, index) in problemStore.problems"
+          :key="problem.id"
+          @on-preview="showPreview"
         />
       </tbody>
     </table>
   </div>
+  <ProblemListModal
+    v-if="problemPreview"
+    :problem="problemPreview"
+    @closed="problemPreview = null"
+  />
 </template>
+
+<script setup lang="ts">
+import type { Problem } from "@/types/problem";
+const problemStore = useProblemStore();
+const problemPreview = ref<Problem | null>(null);
+
+const showPreview = (id: number) => {
+  const problem = problemStore.problems.find((problem) => problem.id === id);
+
+  if (problem) {
+    problemPreview.value = problem;
+  }
+};
+</script>

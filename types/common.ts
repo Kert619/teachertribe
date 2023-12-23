@@ -6,10 +6,20 @@ export interface BaseUser {
 
 export interface BaseExamType {
   id: number;
-  examType: string;
+  exam_type: string;
 }
 
 export interface BaseProblemType {
   id: number;
-  problemType: string;
+  problem_type: string;
+}
+
+export interface BaseProblem {
+  id: number;
+  problem_title: string;
+  description: string;
+  difficulty: string;
+  duration: number;
+  instructions: string;
+  date_created: string;
 }

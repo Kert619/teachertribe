@@ -3,7 +3,7 @@
     <label class="label" v-if="!!label">
       <span class="label-text font-bold">{{ label }}</span>
     </label>
-    <VeeField :name="name" v-slot="{ field, errors }">
+    <VeeField :name="name" v-slot="{ field, errors }" v-model="value">
       <select
         v-bind="field"
         class="select select-bordered"
@@ -20,14 +20,29 @@
 </template>
 
 <script setup lang="ts">
-withDefaults(
+const props = withDefaults(
   defineProps<{
     name: string;
     label?: string;
     size?: "" | "select-xs" | "select-sm" | "select-lg";
+    modelValue?: string;
   }>(),
   {
+    modelValue: "",
     size: "",
   }
 );
+
+const emits = defineEmits<{
+  "update:modelValue": [value: string];
+}>();
+
+const value = computed({
+  get() {
+    return props.modelValue;
+  },
+  set(value) {
+    emits("update:modelValue", value);
+  },
+});
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ErrorMessage v-if="error" />
+    <ErrorStatus v-if="error" />
     <template v-else>
       <ClientOnly>
         <VeeForm :validation-schema="schema" @submit="submitForm">
@@ -9,22 +9,37 @@
           >
             <VTextInput name="problem_title" label="Problem Title" />
 
-            <VSelectInput name="exam_type" label="Exam Type">
+            <VSelectInput
+              name="exam_type"
+              label="Exam Type"
+              v-model="selectedExamTypeId"
+            >
               <option disabled selected value="">Select</option>
               <option
                 v-for="examType in examTypeStore.examTypes"
                 :key="examType.id"
-                :value="examType.id"
+                :value="String(examType.id)"
               >
-                {{ examType.examType }}
+                {{ examType.exam_type }}
               </option>
             </VSelectInput>
 
-            <VSelectInput name="problem_type" label="Problem Type">
+            <VSelectInput
+              name="problem_type"
+              label="Problem Type"
+              v-model="selectedProblemTypeId"
+            >
               <option disabled selected value="">Select</option>
+              <option
+                v-for="problemType in problemTypes"
+                :key="problemType.id"
+                :value="String(problemType.id)"
+              >
+                {{ problemType.problem_type }}
+              </option>
             </VSelectInput>
 
-            <VTextArea name="problem_description" label="Problem Description" />
+            <VTextArea name="description" label="Problem Description" />
 
             <VSelectInput name="difficulty" label="Difficulty">
               <option disabled selected value="">Select</option>
@@ -39,7 +54,6 @@
               type="number"
             />
           </div>
-
           <p class="mb-3 font-bold">Setup Instruction</p>
           <QuillEditor
             theme="snow"
@@ -48,12 +62,14 @@
             v-model:content="instructions"
             style="min-height: 300px"
           />
-
           <div class="flex justify-center gap-3 mt-5">
             <NuxtLink to="/customize" class="btn btn-wide btn-neutral"
               >Back</NuxtLink
             >
-            <button class="btn btn-wide btn-primary">Next</button>
+            <button class="btn btn-wide btn-primary" :disabled="loading">
+              <span v-if="loading" class="loading loading-spinner"></span>
+              Save
+            </button>
           </div>
         </VeeForm>
       </ClientOnly>
@@ -65,8 +81,18 @@
 import { QuillEditor } from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 import * as yup from "yup";
+import type { ProblemType } from "@/types/problemType";
+import Swal from "sweetalert2";
 
 const examTypeStore = useExamTypeStore();
+const problemTypeStore = useProblemTypeStore();
+const problemStore = useProblemStore();
+
+const selectedExamTypeId = ref("");
+const selectedProblemTypeId = ref("");
+const loading = ref(false);
+
+const problemTypes = ref<ProblemType[] | null>(null);
 
 const instructions = ref("");
 
@@ -78,9 +104,42 @@ const schema = {
   duration: yup.number().required().label("Duration"),
 };
 
-const submitForm = (values: any) => {
-  console.log(values);
+const submitForm = async (values: any) => {
+  loading.value = true;
+  const { data } = await problemStore.createProblem({
+    problem_title: values.problem_title,
+    description: values.description,
+    problem_type_id: values.problem_type,
+    difficulty: values.difficulty,
+    duration: values.duration,
+    instructions: instructions.value,
+  });
+
+  loading.value = false;
+
+  if (data.value) {
+    await Swal.fire({
+      title: "Success!",
+      text: "New problem has been added",
+      icon: "success",
+    });
+
+    await navigateTo("/customize", { replace: true });
+  }
 };
 
 const { error } = await examTypeStore.getExamTypes();
+
+watchEffect(async () => {
+  if (selectedExamTypeId.value) {
+    problemTypes.value = null;
+    selectedProblemTypeId.value = "";
+
+    const { data } = await problemTypeStore.getProblemTypesByExamTypeId(
+      Number(selectedExamTypeId.value)
+    );
+
+    if (data.value) problemTypes.value = data.value;
+  }
+});
 </script>
