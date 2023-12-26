@@ -1,7 +1,9 @@
 <template>
   <PageContent title="Dashboard">
     <div class="flex justify-between items-center">
-      <NuxtLink class="underline">Add New Assessment</NuxtLink>
+      <NuxtLink to="/assessments/create" class="underline"
+        >Add New Assessment</NuxtLink
+      >
       <div class="space-x-3">
         <span>Sort by:</span>
         <select class="select select-bordered select-sm">

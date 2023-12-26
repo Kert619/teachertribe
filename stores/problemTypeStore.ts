@@ -1,4 +1,4 @@
-import type { ProblemType } from "../types/problemType";
+import type { ProblemType } from "@/types/problemType";
 
 export const useProblemTypeStore = defineStore("problemType", () => {
   const getProblemTypesByExamTypeId = async (id: number) => {

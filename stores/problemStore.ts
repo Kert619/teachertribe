@@ -19,6 +19,23 @@ export const useProblemStore = defineStore("problems", () => {
     return result;
   };
 
+  const getProblemsByProblemTypeId = async (id: string) => {
+    const nuxtApp = useNuxtApp();
+
+    const result = await useAPI<Problem[]>(
+      `/problems/${id}/get-all-by-problem-type-id`,
+      {
+        getCachedData: (key) =>
+          nuxtApp.static.data[key] ?? nuxtApp.payload.data[key],
+        transform: (data: any) => {
+          return data.data as Problem[];
+        },
+      }
+    );
+
+    return result;
+  };
+
   const createProblem = async (payload: CreateProblemPayload) => {
     const result = await useAPI<Problem>("/problems", {
       method: "post",
@@ -46,5 +63,11 @@ export const useProblemStore = defineStore("problems", () => {
     return result;
   };
 
-  return { problems, getProblems, createProblem, removeProblem };
+  return {
+    problems,
+    getProblems,
+    getProblemsByProblemTypeId,
+    createProblem,
+    removeProblem,
+  };
 });

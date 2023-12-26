@@ -23,3 +23,13 @@ export interface BaseProblem {
   instructions: string;
   date_created: string;
 }
+
+export interface BaseAssessment {
+  id: number;
+  assessment_title: string;
+  description: string;
+  time_restriction: boolean;
+  setup_time: number;
+  window_proctor: boolean;
+  randomize: boolean;
+}

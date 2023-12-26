@@ -2,16 +2,16 @@ import type { TestCase } from "@/types/testcase";
 
 export const useNoughtsAndCrosses = (code: string): TestCase[] => {
   const testCases = [
-    { name: "H1 heading", passed: false },
-    { name: "H1 text-align attribute", passed: false },
-    { name: "Table tag", passed: false },
-    { name: "Table attributes", passed: false },
-    { name: "Table format", passed: false },
-    { name: "Figure style", passed: false },
-    { name: "Figure dimension", passed: false },
-    { name: "Figure background", passed: false },
-    { name: "Figure border", passed: false },
-    { name: 'Middle box letter "X"', passed: false },
+    { name: "H1 heading", passed: false, score: 2 },
+    { name: "H1 text-align attribute", passed: false, score: 2 },
+    { name: "Table tag", passed: false, score: 2 },
+    { name: "Table attributes", passed: false, score: 2 },
+    { name: "Table format", passed: false, score: 2 },
+    { name: "Figure style", passed: false, score: 2 },
+    { name: "Figure dimension", passed: false, score: 2 },
+    { name: "Figure background", passed: false, score: 2 },
+    { name: "Figure border", passed: false, score: 2 },
+    { name: 'Middle box letter "X"', passed: false, score: 2 },
   ];
 
   const parser = new DOMParser();

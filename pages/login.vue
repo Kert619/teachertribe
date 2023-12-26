@@ -56,6 +56,6 @@ const submitForm = async (values: any) => {
 };
 
 watchEffect(async () => {
-  if (authStore.user) await navigateTo("/assessment");
+  if (authStore.user) await navigateTo("/assessments");
 });
 </script>

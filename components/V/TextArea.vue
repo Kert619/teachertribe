@@ -1,7 +1,9 @@
 <template>
   <div class="form-control">
     <label class="label" v-if="!!label">
-      <span class="label-text font-bold">{{ label }}</span>
+      <span class="label-text font-bold"
+        >{{ label }} <span v-if="required" class="text-red-500">*</span></span
+      >
     </label>
     <VeeField :name="name" v-slot="{ field, errors }">
       <textarea
@@ -12,6 +14,7 @@
           [size]: true,
           'border-red-500 focus:border-red-500': errors[0],
         }"
+        :disabled="disabled"
       ></textarea>
       <ErrorMessage :name="name" class="text-red-500 mt-1" />
     </VeeField>
@@ -25,9 +28,13 @@ withDefaults(
     label?: string;
     placeholder?: string;
     size?: "textarea-xs" | "textarea-sm" | "textarea-md" | "textarea-lg";
+    disabled?: boolean;
+    required?: boolean;
   }>(),
   {
     size: "textarea-md",
+    disabled: false,
+    required: false,
   }
 );
 </script>

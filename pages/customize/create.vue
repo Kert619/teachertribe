@@ -12,7 +12,7 @@
             <VSelectInput
               name="exam_type"
               label="Exam Type"
-              v-model="selectedExamTypeId"
+              v-model="examTypeId"
             >
               <option disabled selected value="">Select</option>
               <option
@@ -27,7 +27,7 @@
             <VSelectInput
               name="problem_type"
               label="Problem Type"
-              v-model="selectedProblemTypeId"
+              v-model="problemTypeId"
             >
               <option disabled selected value="">Select</option>
               <option
@@ -88,8 +88,8 @@ const examTypeStore = useExamTypeStore();
 const problemTypeStore = useProblemTypeStore();
 const problemStore = useProblemStore();
 
-const selectedExamTypeId = ref("");
-const selectedProblemTypeId = ref("");
+const examTypeId = ref("");
+const problemTypeId = ref("");
 const loading = ref(false);
 
 const problemTypes = ref<ProblemType[] | null>(null);
@@ -130,13 +130,11 @@ const submitForm = async (values: any) => {
 
 const { error } = await examTypeStore.getExamTypes();
 
-watchEffect(async () => {
-  if (selectedExamTypeId.value) {
-    problemTypes.value = null;
-    selectedProblemTypeId.value = "";
-
+watch(examTypeId, async () => {
+  if (examTypeId.value) {
+    problemTypeId.value = "";
     const { data } = await problemTypeStore.getProblemTypesByExamTypeId(
-      Number(selectedExamTypeId.value)
+      Number(examTypeId.value)
     );
 
     if (data.value) problemTypes.value = data.value;

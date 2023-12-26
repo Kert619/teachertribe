@@ -11,12 +11,12 @@
       </button>
     </div>
 
-    <div class="space-y-2">
+    <div class="space-y-1">
       <h4 class="border-b text-center whitespace-nowrap">
         {{ assessmentName }}
       </h4>
       <p class="text-center whitespace-nowrap text-sm">
-        {{ assessmentDetails }} | {{ assessmentDescription }}
+        {{ assessmentDescription }}
       </p>
     </div>
 
@@ -36,7 +36,6 @@
 <script setup lang="ts">
 defineProps<{
   assessmentName: string;
-  assessmentDetails: string;
   assessmentDescription: string;
   done: number;
   onGoing: number;

@@ -41,11 +41,18 @@
           <div class="space-y-3">
             <p class="mt-3 text-green-500">Test Cases:</p>
             <p
-              class="font-bold border p-3"
+              class="font-bold border p-3 flex justify-between"
               v-for="testCase in testCases"
               :key="testCase.name"
             >
-              {{ testCase.name }}
+              <span> {{ testCase.name }}</span>
+              <span
+                >{{
+                  ` ${testCase.score} ${
+                    testCase.score === 1 ? " point" : " points"
+                  }`
+                }}
+              </span>
             </p>
           </div>
         </div>

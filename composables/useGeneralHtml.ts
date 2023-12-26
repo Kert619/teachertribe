@@ -2,16 +2,16 @@ import type { TestCase } from "@/types/testcase";
 
 export const useGeneralHtml = (code: string): TestCase[] => {
   const testCases = [
-    { name: "H1 heading", passed: false },
-    { name: "Italic tag", passed: false },
-    { name: "Table format ok", passed: false },
-    { name: "Date input", passed: false },
-    { name: "Color input", passed: false },
-    { name: "Number input", passed: false },
-    { name: "Search input", passed: false },
-    { name: "H2 heading", passed: false },
-    { name: "Anchor link", passed: false },
-    { name: "Unordered list", passed: false },
+    { name: "H1 heading", passed: false, score: 2 },
+    { name: "Italic tag", passed: false, score: 2 },
+    { name: "Table format ok", passed: false, score: 2 },
+    { name: "Date input", passed: false, score: 2 },
+    { name: "Color input", passed: false, score: 2 },
+    { name: "Number input", passed: false, score: 2 },
+    { name: "Search input", passed: false, score: 2 },
+    { name: "H2 heading", passed: false, score: 2 },
+    { name: "Anchor link", passed: false, score: 2 },
+    { name: "Unordered list", passed: false, score: 2 },
   ];
 
   const parser = new DOMParser();

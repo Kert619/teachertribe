@@ -1,7 +1,9 @@
 <template>
   <div class="form-control">
     <label class="label" v-if="!!label">
-      <span class="label-text font-bold">{{ label }}</span>
+      <span class="label-text font-bold"
+        >{{ label }} <span v-if="required" class="text-red-500">*</span></span
+      >
     </label>
     <VeeField :name="name" v-slot="{ field, errors }" v-model="value">
       <select
@@ -11,6 +13,7 @@
           [size]: true,
           'border-red-500 focus:border-red-500': errors[0],
         }"
+        :disabled="disabled"
       >
         <slot></slot>
       </select>
@@ -25,16 +28,20 @@ const props = withDefaults(
     name: string;
     label?: string;
     size?: "" | "select-xs" | "select-sm" | "select-lg";
-    modelValue?: string;
+    modelValue?: any;
+    disabled?: boolean;
+    required?: boolean;
   }>(),
   {
     modelValue: "",
     size: "",
+    disabled: false,
+    required: false,
   }
 );
 
 const emits = defineEmits<{
-  "update:modelValue": [value: string];
+  "update:modelValue": [value: any];
 }>();
 
 const value = computed({
