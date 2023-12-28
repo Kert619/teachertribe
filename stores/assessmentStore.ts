@@ -8,18 +8,37 @@ import type { IsExist } from "@/types/isExist";
 export const useAssessmentStore = defineStore("assessments", () => {
   const assessments = ref<AssessmentPaginated>();
 
-  const getAssessments = async () => {
+  const getAssessments = async (page: number = 1, refresh = false) => {
     const nuxtApp = useNuxtApp();
 
     const result = await useAPI<AssessmentPaginated>(
-      "/assessments?per_page=10",
+      `/assessments?page=${page}&per_page=5`,
       {
-        getCachedData: (key) =>
-          nuxtApp.static.data[key] ?? nuxtApp.payload.data[key],
+        getCachedData: (key) => {
+          if (refresh) {
+            clearNuxtData();
+            return nuxtApp.static.data[key];
+          }
+          return nuxtApp.static.data[key] ?? nuxtApp.payload.data[key];
+        },
       }
     );
 
     if (result.data.value) assessments.value = result.data.value;
+
+    return result;
+  };
+
+  const getAssessment = async (id: number) => {
+    const nuxtApp = useNuxtApp();
+
+    const result = await useAPI<Assessment>(`/assessments/${id}`, {
+      getCachedData: (key) =>
+        nuxtApp.static.data[key] ?? nuxtApp.payload.data[key],
+      transform: (data: any) => {
+        return data.data as Assessment;
+      },
+    });
 
     return result;
   };
@@ -49,14 +68,27 @@ export const useAssessmentStore = defineStore("assessments", () => {
       },
     });
 
-    if (result.data.value) assessments.value?.data.push(result.data.value);
+    if (!result.error.value) return await getAssessments(1, true);
+
+    return result;
+  };
+
+  const removeAssessment = async (id: number) => {
+    const result = await useAPI(`/assessments/${id}`, {
+      method: "delete",
+    });
+
+    if (!result.error.value) return await getAssessments(1, true);
+
     return result;
   };
 
   return {
     assessments,
     getAssessments,
+    getAssessment,
     checkExistingAssessmentTitle,
     createAssessment,
+    removeAssessment,
   };
 });

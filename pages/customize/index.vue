@@ -22,6 +22,10 @@
 <script setup lang="ts">
 const problemStore = useProblemStore();
 
+useHead({
+  title: "Teacher Tribe - Customize",
+});
+
 const { error } = await problemStore.getProblems();
 
 if (process.client) {

@@ -1,121 +1,136 @@
 <template>
   <div>
     <ErrorStatus v-if="error" />
-    <VeeForm
-      v-else
-      class="grid grid-cols-12 gap-3"
-      @submit="submitForm"
-      :validation-schema="schema"
-      :initial-values="initialValues"
-    >
-      <div class="col-span-full sm:col-span-8">
-        <VTextInput name="assessment_title" label="Assessment Title" required />
-        <VTextArea name="description" label="Description" />
-      </div>
-      <div class="col-span-full sm:col-span-4">
-        <VSelectInput
-          name="time_restriction"
-          label="Time Restriction"
-          v-model="time_restriction"
-        >
-          <option :value="false">No</option>
-          <option :value="true">Yes</option>
-        </VSelectInput>
-        <VTextInput
-          name="setup_time"
-          label="Setup Time (Minutes)"
-          type="number"
-          :disabled="!time_restriction"
-          v-model="setup_time"
-        />
-        <VSelectInput
-          name="window_proctor"
-          label="Window Proctor"
-          v-model="window_proctor"
-        >
-          <option :value="false">No</option>
-          <option :value="true">Yes</option>
-        </VSelectInput>
-      </div>
-      <hr class="col-span-full mt-5" />
-
-      <div class="col-span-full flex flex-wrap gap-3">
-        <div class="grow basis-40">
-          <VSelectInput
-            name="exam_type"
-            label="Type of Exam"
+    <template v-else>
+      <h3>Create Assessment</h3>
+      <hr />
+      <VeeForm
+        class="grid grid-cols-12 gap-3 mt-3"
+        @submit="submitForm"
+        :validation-schema="schema"
+        :initial-values="initialValues"
+      >
+        <div class="col-span-full sm:col-span-8">
+          <VTextInput
+            name="assessment_title"
+            label="Assessment Title"
             required
-            v-model="examTypeId"
-          >
-            <option disabled selected value="">Select</option>
-            <option
-              v-for="examType in examTypeStore.examTypes"
-              :key="examType.id"
-              :value="examType.id"
-            >
-              {{ examType.exam_type }}
-            </option>
-          </VSelectInput>
+          />
+          <VTextArea name="description" label="Description" />
         </div>
-        <div class="grow basis-40">
+        <div class="col-span-full sm:col-span-4">
           <VSelectInput
-            name="problem_type"
-            label="Problem Type"
-            required
-            v-model="problemTypeId"
+            name="time_restriction"
+            label="Time Restriction"
+            v-model="time_restriction"
           >
-            <option disabled selected value="">Select</option>
-            <option
-              v-for="problemType in problemTypes"
-              :key="problemType.id"
-              :value="problemType.id"
-            >
-              {{ problemType.problem_type }}
-            </option>
+            <option :value="false">No</option>
+            <option :value="true">Yes</option>
           </VSelectInput>
-        </div>
-        <div class="grow basis-40">
-          <VSelectInput name="randomize" label="Randomize" v-model="randomize">
+          <VTextInput
+            name="setup_time"
+            label="Setup Time (Minutes)"
+            type="number"
+            :disabled="!time_restriction"
+            v-model="setup_time"
+          />
+          <VSelectInput
+            name="window_proctor"
+            label="Window Proctor"
+            v-model="window_proctor"
+          >
             <option :value="false">No</option>
             <option :value="true">Yes</option>
           </VSelectInput>
         </div>
-      </div>
+        <hr class="col-span-full mt-5" />
 
-      <div class="col-span-full sm:col-span-6 p-3 border">
-        <p class="font-bold mb-2">Available Problems:</p>
-        <Loading v-if="loadingAvailableProblems" />
-        <AssessmentProblemList
-          v-else="availableProblems.length > 0"
-          @selected="handleSelectAvailableProblems"
-          arrow-position="right"
-          v-model="availableProblems"
-        />
-      </div>
+        <div class="col-span-full flex flex-wrap gap-3">
+          <div class="grow basis-40">
+            <VSelectInput
+              name="exam_type"
+              label="Type of Exam"
+              required
+              v-model="examTypeId"
+            >
+              <option disabled selected value="">Select</option>
+              <option
+                v-for="examType in examTypeStore.examTypes"
+                :key="examType.id"
+                :value="examType.id"
+              >
+                {{ examType.exam_type }}
+              </option>
+            </VSelectInput>
+          </div>
+          <div class="grow basis-40">
+            <VSelectInput
+              name="problem_type"
+              label="Problem Type"
+              required
+              v-model="problemTypeId"
+            >
+              <option disabled selected value="">Select</option>
+              <option
+                v-for="problemType in problemTypes"
+                :key="problemType.id"
+                :value="problemType.id"
+              >
+                {{ problemType.problem_type }}
+              </option>
+            </VSelectInput>
+          </div>
+          <div class="grow basis-40">
+            <VSelectInput
+              name="randomize"
+              label="Randomize"
+              v-model="randomize"
+            >
+              <option :value="false">No</option>
+              <option :value="true">Yes</option>
+            </VSelectInput>
+          </div>
+        </div>
 
-      <div class="col-span-full sm:col-span-6 p-3 border">
-        <p class="font-bold">Selected Problems (Drag to manage):</p>
-        <AssessmentProblemList
-          @selected="handleSelectSelectedProblems"
-          arrow-position="left"
-          v-model="selectedProblems"
-        />
-      </div>
+        <div class="col-span-full sm:col-span-6 p-3 border">
+          <p class="font-bold mb-2">Available Problems:</p>
+          <Loading v-if="loadingAvailableProblems" />
+          <AssessmentProblemList
+            v-else="availableProblems.length > 0"
+            @selected="handleSelectAvailableProblems"
+            arrow-position="right"
+            v-model="availableProblems"
+          />
+        </div>
 
-      <div class="col-span-full flex justify-center gap-3 flex-wrap mt-5">
-        <NuxtLink to="/assessments" class="btn btn-neutral btn-wide"
-          >Back</NuxtLink
-        >
-        <button
-          type="submit"
-          class="btn btn-primary btn-wide"
-          :disabled="selectedProblems.length === 0 || loading"
-        >
-          <span v-if="loading" class="loading loading-spinner"></span>
-          Save
-        </button>
-      </div>
-    </VeeForm>
+        <div class="col-span-full sm:col-span-6 p-3 border">
+          <p class="font-bold">Selected Problems (Drag to manage):</p>
+          <AssessmentProblemList
+            @selected="handleSelectSelectedProblems"
+            arrow-position="left"
+            v-model="selectedProblems"
+          />
+        </div>
+
+        <div class="col-span-full flex justify-center gap-3 flex-wrap mt-5">
+          <button
+            @click="handleBack"
+            type="button"
+            class="btn btn-neutral btn-wide"
+          >
+            Back
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary btn-wide"
+            :disabled="selectedProblems.length === 0 || loading"
+          >
+            <span v-if="loading" class="loading loading-spinner"></span>
+            Save
+          </button>
+        </div>
+      </VeeForm>
+    </template>
   </div>
 </template>
 
@@ -129,6 +144,11 @@ const examTypeStore = useExamTypeStore();
 const problemTypeStore = useProblemTypeStore();
 const problemStore = useProblemStore();
 const assessmentStore = useAssessmentStore();
+const router = useRouter();
+
+useHead({
+  title: "Teacher Tribe - Create Assessment",
+});
 
 const time_restriction = ref(false);
 const window_proctor = ref(false);
@@ -140,6 +160,14 @@ const setup_time = ref(0);
 const problemTypes = ref<ProblemType[]>([]);
 const availableProblems = ref<Problem[]>([]);
 const selectedProblems = ref<Problem[]>([]);
+
+const handleBack = async () => {
+  if (!window.history.state.back) {
+    await navigateTo("/assessments");
+  } else {
+    router.back();
+  }
+};
 
 const problemNameList = computed(() => {
   return selectedProblems.value.reduce(
@@ -226,7 +254,7 @@ const submitForm = async (values: any) => {
   }).then(async (result) => {
     if (result.isConfirmed) {
       loading.value = true;
-      const { data } = await assessmentStore.createAssessment({
+      const { error } = await assessmentStore.createAssessment({
         assessment_title: values.assessment_title,
         description: values.description,
         time_restriction: values.time_restriction,
@@ -237,7 +265,7 @@ const submitForm = async (values: any) => {
       });
       loading.value = false;
 
-      if (data.value) {
+      if (!error.value) {
         await Swal.fire({
           title: "Success!",
           text: "New assessment has been added",

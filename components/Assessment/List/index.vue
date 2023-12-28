@@ -1,26 +1,25 @@
 <template>
   <div class="p-3 space-y-3 overflow-auto">
-    <ErrorStatus v-if="error" />
     <AssessmentListItem
-      v-else-if="data && data.data.length > 0"
-      :assessment-name="assessment.assessment_title"
-      :assessment-description="
-        assessment.description ? assessment.description : 'No Description'
-      "
-      :pending="3"
-      :on-going="12"
-      :done="8"
-      v-for="assessment in data.data"
+      :assessment="assessment"
+      v-for="assessment in assessments.data"
       :key="assessment.id"
+      @item-deleted="handleItemDeleted"
     />
-    <h4 v-else class="mt-3">No assessment found</h4>
   </div>
 </template>
 
 <script setup lang="ts">
-// import { TailwindPagination } from 'laravel-vue-pagination';
+import type { AssessmentPaginated } from "@/types/assessment";
+defineProps<{
+  assessments: AssessmentPaginated;
+}>();
 
-const assessmentStore = useAssessmentStore();
+const emits = defineEmits<{
+  itemDeleted: [id: number];
+}>();
 
-const { data, error } = await assessmentStore.getAssessments();
+const handleItemDeleted = (id: number) => {
+  emits("itemDeleted", id);
+};
 </script>
