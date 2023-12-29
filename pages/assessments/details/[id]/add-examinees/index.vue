@@ -1,7 +1,7 @@
 <template>
   <div>
     <ErrorStatus v-if="error" />
-    <template v-else-if="data">
+    <template v-else-if="assessment">
       <h3>Add Examinees</h3>
       <hr />
       <ClientOnly>
@@ -77,11 +77,40 @@
                       </VSelectInput>
                     </td>
                     <td>
-                      <div class="w-[200px]">
-                        <VTextInput
-                          :name="`examinees[${idx}].group`"
-                          size="input-sm"
-                        />
+                      <div class="flex flex-nowrap gap-3">
+                        <div class="w-[150px]">
+                          <div class="hidden">
+                            <VTextInput
+                              :name="`examinees[${idx}].group_id`"
+                              disabled
+                              size="input-sm"
+                            />
+                          </div>
+                          <VTextInput
+                            :name="`examinees[${idx}].group_name`"
+                            disabled
+                            size="input-sm"
+                          />
+                        </div>
+
+                        <button
+                          type="button"
+                          class="btn btn-sm"
+                          @click="
+                            (field.value.group_id = ''),
+                              (field.value.group_name = '')
+                          "
+                        >
+                          Remove Group
+                        </button>
+
+                        <button
+                          type="button"
+                          class="btn btn-sm whitespace-nowrap btn-primary"
+                          @click="openModal(field)"
+                        >
+                          Add Group
+                        </button>
                       </div>
                     </td>
                     <td>
@@ -114,7 +143,8 @@
                         email: '',
                         contact: '',
                         test_mode: 'Not Secure',
-                        group: '',
+                        group_id: '',
+                        group_name: '',
                         schedule_from: '',
                         schedule_to: '',
                       })
@@ -142,6 +172,12 @@
             </button>
           </div>
         </VeeForm>
+        <AssessmentGroupModal
+          v-if="showModal && groups"
+          @closed="showModal = false"
+          :groups="groups"
+          @selected="handleSelect"
+        />
       </ClientOnly>
     </template>
   </div>
@@ -157,9 +193,16 @@ useHead({
 const route = useRoute();
 const router = useRouter();
 const id = route.params.id as string;
-const assessmentStore = useAssessmentStore();
+const showModal = ref(false);
 
-const { data, error } = await assessmentStore.getAssessment(Number(id));
+const assessmentStore = useAssessmentStore();
+const groupStore = useGroupStore();
+
+const { data: assessment, error } = await assessmentStore.getAssessment(
+  Number(id)
+);
+
+const { data: groups } = await groupStore.getGroups();
 
 const initialData = {
   examinees: [
@@ -169,7 +212,8 @@ const initialData = {
       email: "",
       contact: "",
       test_mode: "Not Secure",
-      group: "",
+      group_id: "",
+      group_name: "",
       schedule_from: "",
       schedule_to: "",
     },
@@ -185,8 +229,12 @@ const schema = yup.object().shape({
         last_name: yup.string().required().label("Last Name"),
         email: yup.string().required().email().label("Email"),
         contact: yup.string().required().label("Contact"),
-        test_mode: yup.string().required().label("Test Mode"),
-        group: yup.string().required().label("Group"),
+        test_mode: yup
+          .string()
+          .required()
+          .oneOf(["Secure", "Not Secure"])
+          .label("Test Mode"),
+        group_id: yup.string().nullable().label("Group"),
         schedule_from: yup.string().required().label("Schedule From"),
         schedule_to: yup.string().required().label("Schedule To"),
       })
@@ -204,5 +252,18 @@ const handleBack = async () => {
 
 const submitForm = (values: any) => {
   console.log(values);
+};
+
+let groupField: any;
+
+const openModal = (field: any) => {
+  showModal.value = true;
+  groupField = field;
+};
+
+const handleSelect = (groupId: number, groupName: string) => {
+  showModal.value = false;
+  groupField.value.group_id = String(groupId);
+  groupField.value.group_name = groupName;
 };
 </script>

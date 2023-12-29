@@ -29,7 +29,9 @@ useHead({
 const { error } = await problemStore.getProblems();
 
 if (process.client) {
-  const generalHtml = useGeneralHtml(`
+  const testCases = useTestCases("General HTML");
+  if (testCases) {
+    const result = testCases.validate(`
   <html>
 <body>
 <h1>Page Title</h1>
@@ -59,6 +61,7 @@ if (process.client) {
 </html>
 `);
 
-  console.log(generalHtml);
+    console.log(result);
+  }
 }
 </script>

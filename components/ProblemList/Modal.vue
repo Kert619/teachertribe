@@ -62,7 +62,6 @@
 </template>
 
 <script setup lang="ts">
-import type { TestCase } from "@/types/testcase";
 import type { Problem } from "@/types/problem";
 
 const props = defineProps<{
@@ -73,7 +72,9 @@ const emits = defineEmits<{
   closed: [];
 }>();
 
-const testCases = ref<TestCase[]>([]);
+const problemTestCases = useTestCases(props.problem.problem_title)!;
+
+const testCases = problemTestCases.validate("");
 
 onMounted(() => {
   const modal: any = document.querySelector("#modal");
@@ -83,13 +84,4 @@ onMounted(() => {
 const closeModal = () => {
   emits("closed");
 };
-
-switch (props.problem.problem_title) {
-  case "Noughts and Crosses":
-    testCases.value = useNoughtsAndCrosses("");
-    break;
-  case "General HTML":
-    testCases.value = useGeneralHtml("");
-    break;
-}
 </script>

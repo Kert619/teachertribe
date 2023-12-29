@@ -3,3 +3,8 @@ export interface TestCase {
   passed: boolean;
   score: number;
 }
+
+export interface ProblemTestCase {
+  readonly problem_name: string;
+  validate: (code: string) => TestCase[];
+}

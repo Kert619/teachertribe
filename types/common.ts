@@ -33,3 +33,8 @@ export interface BaseAssessment {
   window_proctor: boolean;
   randomize: boolean;
 }
+
+export interface BaseGroup {
+  id: number;
+  group_name: string;
+}
