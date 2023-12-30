@@ -10,6 +10,7 @@
           :initial-values="initialData"
           :validation-schema="schema"
           @submit="submitForm"
+          v-slot="{ validate, values }"
         >
           <div class="overflow-x-auto">
             <table class="table">
@@ -23,7 +24,7 @@
                   <th>Test Mode</th>
                   <th>Group</th>
                   <th>Schedule (From - To)</th>
-                  <th>Action</th>
+                  <th v-if="step === 1">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -31,6 +32,13 @@
                   name="examinees"
                   v-slot="{ fields, push, remove }"
                 >
+                  <AssessmentGroupModal
+                    v-if="showModal && groupStore.groups"
+                    @closed="showModal = false"
+                    :groups="groupStore.groups"
+                    @selected="handleSelected"
+                    @deleted="(id: number) => handleDeleted(fields, id)"
+                  />
                   <tr v-for="(field, idx) in fields" :key="field.key">
                     <th>{{ idx + 1 }}</th>
                     <td>
@@ -38,6 +46,7 @@
                         <VTextInput
                           :name="`examinees[${idx}].first_name`"
                           size="input-sm"
+                          :disabled="step === 2"
                         />
                       </div>
                     </td>
@@ -46,6 +55,7 @@
                         <VTextInput
                           :name="`examinees[${idx}].last_name`"
                           size="input-sm"
+                          :disabled="step === 2"
                         />
                       </div>
                     </td>
@@ -55,6 +65,7 @@
                           :name="`examinees[${idx}].email`"
                           type="email"
                           size="input-sm"
+                          :disabled="step === 2"
                         />
                       </div>
                     </td>
@@ -63,6 +74,7 @@
                         <VTextInput
                           :name="`examinees[${idx}].contact`"
                           size="input-sm"
+                          :disabled="step === 2"
                         />
                       </div>
                     </td>
@@ -71,6 +83,7 @@
                         :name="`examinees[${idx}].test_mode`"
                         size="select-sm"
                         v-model="field.value.test_mode"
+                        :disabled="step === 2"
                       >
                         <option value="Not Secure">Not Secure</option>
                         <option value="Secure">Secure</option>
@@ -100,6 +113,7 @@
                             (field.value.group_id = ''),
                               (field.value.group_name = '')
                           "
+                          v-if="step === 1"
                         >
                           Remove Group
                         </button>
@@ -108,6 +122,7 @@
                           type="button"
                           class="btn btn-sm whitespace-nowrap btn-primary"
                           @click="openModal(field)"
+                          v-if="step === 1"
                         >
                           Add Group
                         </button>
@@ -119,23 +134,29 @@
                           :name="`examinees[${idx}].schedule_from`"
                           type="datetime-local"
                           size="input-sm"
+                          :disabled="step === 2"
                         />
                         <VTextInput
                           :name="`examinees[${idx}].schedule_to`"
                           type="datetime-local"
                           size="input-sm"
+                          :disabled="step === 2"
                         />
                       </div>
                     </td>
                     <td>
-                      <button class="btn btn-sm" @click="remove(idx)">
+                      <button
+                        class="btn btn-sm"
+                        @click="remove(idx)"
+                        v-if="step === 1"
+                      >
                         Delete
                       </button>
                     </td>
                   </tr>
                   <button
                     type="button"
-                    class="btn btn-sm my-3"
+                    class="btn btn-sm btn-primary my-3"
                     @click="
                       push({
                         first_name: '',
@@ -149,35 +170,139 @@
                         schedule_to: '',
                       })
                     "
+                    v-if="step === 1"
                   >
                     Add
                   </button>
                 </VeeFieldArray>
               </tbody>
             </table>
+            <button
+              class="btn btn-sm btn-primary my-3"
+              @click="step--"
+              v-if="step === 2"
+            >
+              Edit List
+            </button>
           </div>
 
           <div class="flex justify-center flex-wrap gap-3 mt-3">
-            <button
-              type="button"
-              class="btn btn-neutral btn-wide"
-              @click="handleBack"
-            >
-              <IconLogout class="rotate-180" />
-              Back
-            </button>
-            <button type="submit" class="btn btn-primary btn-wide">
-              <IconRightChevron />
-              Next
-            </button>
+            <template v-if="step === 1">
+              <button
+                type="button"
+                class="btn btn-neutral btn-wide"
+                @click="handleBack"
+              >
+                <IconLogout class="rotate-180" />
+                Back
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary btn-wide"
+                @click="validateForm(validate)"
+              >
+                <IconRightChevron />
+                Next
+              </button>
+            </template>
           </div>
+
+          <template v-if="step === 2">
+            <h4 class="font-bold my-5">Email Invitation Confirmation</h4>
+            <div class="flex flex-wrap gap-5">
+              <div class="grow">
+                <VTextInput
+                  name="subject"
+                  label="Subject:"
+                  size="input-sm"
+                  v-model="subject"
+                />
+              </div>
+
+              <div class="grow">
+                <VTextInput
+                  name="reply_to"
+                  label="Reply to:"
+                  size="input-sm"
+                  v-model="replyTo"
+                  disabled
+                />
+              </div>
+            </div>
+
+            <div class="border p-5 my-5 space-y-3">
+              <p>
+                Good day, <span class="text-red-500">[candidatename]</span>!
+              </p>
+
+              <p>
+                You have been invited to take the
+                <strong>{{ assessment.assessment_title }}</strong
+                >.
+              </p>
+
+              <p>
+                To begin the test, please copy the following URL, open it in a
+                browser, and enter the given test pin on the page.
+              </p>
+
+              <p>
+                <span>URL: </span>
+                <a
+                  class="underline text-blue-600"
+                  href="https://teachertribe.fly.dev/test"
+                  target="_blank"
+                  >https://teachertribe.fly.dev/test</a
+                >
+                <br />
+                <span>Test PIN: </span>
+                <span class="text-blue-600">&lt;System Generated PIN&gt;</span>
+              </p>
+
+              <p>
+                The above Test PIN will be valid only after the
+                <span class="text-red-500"
+                  >[start date and time setup in the schedule]</span
+                >
+                until the
+                <span class="text-red-500"
+                  >[end date and time setup in the schedule]</span
+                >.
+              </p>
+
+              <p>
+                All instructions regarding test coverage, duration, and format
+                will be available at the start of the test.
+              </p>
+
+              <p>
+                <span>Happy Coding!</span>
+                <br />
+                <span>- Teacher Tribe</span>
+              </p>
+            </div>
+
+            <div class="flex justify-center">
+              <button
+                type="button"
+                class="btn btn-primary"
+                @click="showEmailModal = true"
+              >
+                Preview
+              </button>
+            </div>
+          </template>
+
+          <AssessmentEmailPreviewModal
+            :subject="subject"
+            :assessment-title="assessment.assessment_title"
+            v-if="showEmailModal"
+            @closed="showEmailModal = false"
+            @invited="handleInvited(values.examinees)"
+          />
         </VeeForm>
-        <AssessmentGroupModal
-          v-if="showModal && groups"
-          @closed="showModal = false"
-          :groups="groups"
-          @selected="handleSelect"
-        />
+
+        <FullscreenLoading v-if="loading" />
       </ClientOnly>
     </template>
   </div>
@@ -187,7 +312,7 @@
 import * as yup from "yup";
 
 useHead({
-  title: "Teacher Tribe - Assessment Details",
+  title: "Teacher Tribe - Add Examinees",
 });
 
 const route = useRoute();
@@ -198,11 +323,18 @@ const showModal = ref(false);
 const assessmentStore = useAssessmentStore();
 const groupStore = useGroupStore();
 
+const subject = ref("Teacher Tribe - Assessment Invitation");
+const replyTo = ref("admin@coders.tribe.net");
+const showEmailModal = ref(false);
+
+const step = ref(1);
+const loading = ref(false);
+
 const { data: assessment, error } = await assessmentStore.getAssessment(
   Number(id)
 );
 
-const { data: groups } = await groupStore.getGroups();
+await groupStore.getGroups();
 
 const initialData = {
   examinees: [
@@ -250,6 +382,11 @@ const handleBack = async () => {
   }
 };
 
+const validateForm = async (validate: any) => {
+  const result = await validate();
+  if (result.valid) step.value++;
+};
+
 const submitForm = (values: any) => {
   console.log(values);
 };
@@ -261,9 +398,25 @@ const openModal = (field: any) => {
   groupField = field;
 };
 
-const handleSelect = (groupId: number, groupName: string) => {
+const handleSelected = (groupId: number, groupName: string) => {
   showModal.value = false;
   groupField.value.group_id = String(groupId);
   groupField.value.group_name = groupName;
+};
+
+const handleDeleted = (fields: any, id: number) => {
+  fields.forEach((x: any) => {
+    if (x.value.group_id == id) {
+      (x.value.group_id = ""), (x.value.group_name = "");
+    }
+  });
+};
+
+const handleInvited = async (examinees: any) => {
+  console.log(examinees);
+  loading.value = true;
+  setTimeout(() => {
+    loading.value = false;
+  }, 3000);
 };
 </script>

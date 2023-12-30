@@ -27,23 +27,33 @@
                     >
                       Select
                     </button>
-                    <button class="btn btn-sm">Delete</button>
+                    <button class="btn btn-sm" @click="handleDelete(group.id)">
+                      Delete
+                    </button>
                   </div>
                 </td>
               </tr>
               <tr>
                 <th>{{ groups.length + 1 }}</th>
-                <td>
-                  <VTextInput
-                    name="group_name"
-                    size="input-sm"
-                    placeholder="Enter group name"
-                  />
-                </td>
-                <td>
-                  <button class="btn btn-sm btn-block btn-primary">
-                    Add Group
-                  </button>
+                <td colspan="2">
+                  <VeeForm
+                    :validation-schema="schema"
+                    @submit="submitForm"
+                    class="flex gap-3"
+                  >
+                    <VTextInput
+                      name="group_name"
+                      size="input-sm"
+                      placeholder="Enter group name"
+                    />
+                    <button class="btn btn-sm btn-primary" :disabled="loading">
+                      <span
+                        v-if="loading"
+                        class="loading loading-spinner"
+                      ></span>
+                      Add Group
+                    </button>
+                  </VeeForm>
                 </td>
               </tr>
             </tbody>
@@ -55,6 +65,7 @@
 </template>
 
 <script setup lang="ts">
+import * as yup from "yup";
 import type { Group } from "@/types/group";
 
 defineProps<{
@@ -64,6 +75,7 @@ defineProps<{
 const emits = defineEmits<{
   closed: [];
   selected: [groupId: number, groupName: string];
+  deleted: [id: number];
 }>();
 
 const closeModal = () => {
@@ -77,8 +89,35 @@ onMounted(() => {
   modal.showModal();
 });
 
+const groupStore = useGroupStore();
+const loading = ref(false);
+
 const handleSelect = (groupId: number, groupName: string) => {
   emits("selected", groupId, groupName);
   modal.close();
+};
+
+const handleDelete = async (id: number) => {
+  await groupStore.deleteGroup(id);
+  emits("deleted", id);
+};
+
+const schema = yup.object({
+  group_name: yup
+    .string()
+    .required()
+    .test("check-duplicate-group", "Group already exist", (value) => {
+      return !groupStore.groups.find((x) => x.group_name === value);
+    })
+    .label("Group name"),
+});
+
+const submitForm = async (values: any, { resetForm }: any) => {
+  loading.value = true;
+  const { data } = await groupStore.createGroup(values.group_name as string);
+  loading.value = false;
+  if (data.value) {
+    resetForm();
+  }
 };
 </script>
