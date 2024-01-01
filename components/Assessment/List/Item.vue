@@ -24,9 +24,13 @@
     </div>
 
     <div class="text-white whitespace-nowrap">
-      <span class="p-3 bg-green-600">{{ `Done(${0})` }}</span>
-      <span class="p-3 bg-yellow-500">{{ `On-Going(${0})` }}</span>
-      <span class="p-3 bg-red-600">{{ `Pending(${0})` }}</span>
+      <span class="p-3 bg-green-600">{{
+        `Done(${assessment.completed})`
+      }}</span>
+      <span class="p-3 bg-yellow-500">{{
+        `On-Going(${assessment.ongoing})`
+      }}</span>
+      <span class="p-3 bg-red-600">{{ `Pending(${assessment.pending})` }}</span>
     </div>
 
     <button class="btn btn-primary" @click="handleDeleted">

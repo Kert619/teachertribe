@@ -3,6 +3,9 @@ import type { Meta, Links } from "@/types/pageMeta";
 
 export interface Assessment extends BaseAssessment {
   assessment_problems: BaseProblem[];
+  pending: number;
+  ongoing: number;
+  completed: number;
 }
 
 export interface AssessmentPaginated {

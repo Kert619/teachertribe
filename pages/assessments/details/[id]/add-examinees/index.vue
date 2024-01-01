@@ -9,7 +9,6 @@
           class="mt-5"
           :initial-values="initialData"
           :validation-schema="schema"
-          @submit="submitForm"
           v-slot="{ validate, values }"
         >
           <div class="overflow-x-auto">
@@ -310,6 +309,8 @@
 
 <script setup lang="ts">
 import * as yup from "yup";
+import type { Examinee } from "@/types/assessmentExaminee";
+import Swal from "sweetalert2";
 
 useHead({
   title: "Teacher Tribe - Add Examinees",
@@ -322,6 +323,7 @@ const showModal = ref(false);
 
 const assessmentStore = useAssessmentStore();
 const groupStore = useGroupStore();
+const assessmentExamineeStore = useAssessmentExamineeStore();
 
 const subject = ref("Teacher Tribe - Assessment Invitation");
 const replyTo = ref("admin@coders.tribe.net");
@@ -387,10 +389,6 @@ const validateForm = async (validate: any) => {
   if (result.valid) step.value++;
 };
 
-const submitForm = (values: any) => {
-  console.log(values);
-};
-
 let groupField: any;
 
 const openModal = (field: any) => {
@@ -413,10 +411,34 @@ const handleDeleted = (fields: any, id: number) => {
 };
 
 const handleInvited = async (examinees: any) => {
-  console.log(examinees);
+  const newExaminees: Examinee[] = examinees.map((x: any) => {
+    return {
+      first_name: x.first_name,
+      last_name: x.last_name,
+      email: x.email,
+      contact: x.contact,
+      group_id: x.group_id,
+      test_mode: x.test_mode,
+      schedule_from: x.schedule_from,
+      schedule_to: x.schedule_to,
+    };
+  });
+
   loading.value = true;
-  setTimeout(() => {
-    loading.value = false;
-  }, 3000);
+  const result = await assessmentExamineeStore.createAssessmentExaminees({
+    assessment_id: assessment.value!.id,
+    examinees: newExaminees,
+  });
+  loading.value = false;
+
+  if (!result.error.value) {
+    await Swal.fire({
+      title: "Success",
+      text: "Examinees have been invited",
+      icon: "success",
+    });
+
+    await navigateTo("/assessments");
+  }
 };
 </script>
