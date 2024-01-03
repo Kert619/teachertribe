@@ -1,8 +1,8 @@
 <template>
   <div>
-    <ErrorStatus v-if="error || !assessment" />
+    <ErrorStatus v-if="examTypesError || assessmentError" />
     <template v-else>
-      <h3>Update Assessment</h3>
+      <h3>Edit Assessment</h3>
       <hr />
       <ClientOnly>
         <VeeForm
@@ -72,10 +72,9 @@
               <VSelectInput
                 name="problem_type"
                 label="Problem Type"
-                required
                 v-model="problemTypeId"
               >
-                <option disabled selected value="">Select</option>
+                <option selected value="">All</option>
                 <option
                   v-for="problemType in problemTypes"
                   :key="problemType.id"
@@ -99,9 +98,7 @@
 
           <div class="col-span-full sm:col-span-6 p-3 border">
             <p class="font-bold mb-2">Available Problems:</p>
-            <Loading v-if="loadingAvailableProblems" />
             <AssessmentProblemList
-              v-else="availableProblems.length > 0"
               @selected="handleSelectAvailableProblems"
               arrow-position="right"
               v-model="availableProblems"
@@ -142,31 +139,20 @@
 
 <script setup lang="ts">
 import * as yup from "yup";
-import type { ProblemType } from "@/types/problemType";
-import type { Problem } from "@/types/problem";
+import type { ProblemType } from "@/types/ExamType";
+import type { BaseProblem } from "@/types/common";
 import Swal from "sweetalert2";
 
 useHead({
-  title: "Teacher Tribe - Update Assessment",
+  title: "Teacher Tribe - Edit Assessment",
 });
 
 const examTypeStore = useExamTypeStore();
-const problemTypeStore = useProblemTypeStore();
-const problemStore = useProblemStore();
 const assessmentStore = useAssessmentStore();
 const router = useRouter();
+
 const route = useRoute();
-const id = route.params.id as string;
-
-const problemTypes = ref<ProblemType[]>([]);
-const availableProblems = ref<Problem[]>([]);
-const selectedProblems = ref<Problem[]>([]);
-
-const { data: assessment } = await assessmentStore.getAssessment(Number(id));
-const { error } = await examTypeStore.getExamTypes();
-
-const examTypeId = ref("");
-const problemTypeId = ref("");
+const assessmentId = Number(route.params.id);
 
 const form = ref({
   assessment_title: "",
@@ -177,6 +163,38 @@ const form = ref({
   randomize: false,
 });
 
+const examTypeId = ref("");
+const problemTypeId = ref("");
+const loading = ref(false);
+
+const problemTypes = ref<ProblemType[]>([]);
+const availableProblems = ref<BaseProblem[]>([]);
+const selectedProblems = ref<BaseProblem[]>([]);
+
+const removeDuplicateProblems = () => {
+  selectedProblems.value.forEach((x) => {
+    availableProblems.value.forEach((y) => {
+      if (x.id === y.id) {
+        const index = availableProblems.value.findIndex((z) => z.id === x.id);
+        availableProblems.value.splice(index, 1);
+      }
+    });
+  });
+};
+
+const { data: assessment, error: assessmentError } =
+  await assessmentStore.getAssessment(assessmentId);
+
+const { data: examTypes, error: examTypesError } =
+  await examTypeStore.getExamTypes();
+if (examTypes.value && examTypes.value.length > 0) {
+  examTypeId.value = examTypes.value[0].id.toString();
+  availableProblems.value = [
+    ...examTypes.value[0].problem_types.flatMap((x) => x.problems),
+  ];
+  problemTypes.value = [...examTypes.value[0].problem_types];
+}
+
 if (assessment.value) {
   form.value.assessment_title = assessment.value.assessment_title;
   form.value.description = assessment.value.description;
@@ -184,6 +202,8 @@ if (assessment.value) {
   form.value.setup_time = assessment.value.setup_time;
   form.value.window_proctor = !!assessment.value.window_proctor;
   form.value.randomize = !!assessment.value.randomize;
+  selectedProblems.value = [...assessment.value.assessment_problems];
+  removeDuplicateProblems();
 }
 
 const handleBack = async () => {
@@ -203,10 +223,6 @@ const problemNameList = computed(() => {
   );
 });
 
-const loadingAvailableProblems = ref(false);
-
-const loading = ref(false);
-
 const schema = yup.object({
   assessment_title: yup
     .string()
@@ -222,8 +238,6 @@ const schema = yup.object({
         return !(result > 1);
       }
     ),
-  exam_type: yup.string().required().label("Exam Type"),
-  problem_type: yup.string().required().label("Problem Type"),
   setup_time: yup
     .number()
     .typeError("Setup Time is a required field")
@@ -232,22 +246,40 @@ const schema = yup.object({
 });
 
 const submitForm = async (values: any) => {
+  const problemIds = selectedProblems.value.map((x) => x.id);
+  const languages = ref<string[]>([]);
+
+  if (examTypes.value) {
+    examTypes.value.forEach((x) => {
+      const problems = x.problem_types.flatMap((y) => y.problems);
+      problems.forEach((z) => {
+        problemIds.forEach((a) => {
+          if (z.id === a) {
+            if (!languages.value.includes(x.exam_type))
+              languages.value.push(x.exam_type);
+          }
+        });
+      });
+    });
+  }
+
   Swal.fire({
     title: "Confirm Test Details",
     icon: "question",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, save it!",
+    confirmButtonText: "Yes, update it!",
     html: `
     <div class="grid grid-cols-2 mt-5 text-start gap-2">
       <span>Assessment Title:</span>
       <span class="font-bold">${values.assessment_title}</span>
 
-      <span>Type of Exam:</span>
+      <span>Language(s):</span>
       <span class="font-bold">${
-        examTypeStore.examTypes.find((x) => x.id === Number(examTypeId.value))
-          ?.exam_type
+        languages.value.length > 1
+          ? languages.value.join(", ")
+          : languages.value[0]
       }</span>
 
       <span>Time Restriction:</span>
@@ -271,7 +303,7 @@ const submitForm = async (values: any) => {
   }).then(async (result) => {
     if (result.isConfirmed) {
       loading.value = true;
-      const { error } = await assessmentStore.createAssessment({
+      const { error } = await assessmentStore.updateAssessment(assessmentId, {
         assessment_title: values.assessment_title,
         description: values.description,
         time_restriction: values.time_restriction,
@@ -285,7 +317,7 @@ const submitForm = async (values: any) => {
       if (!error.value) {
         await Swal.fire({
           title: "Success!",
-          text: "New assessment has been added",
+          text: "Assessment has been updated",
           icon: "success",
         });
 
@@ -296,25 +328,12 @@ const submitForm = async (values: any) => {
 };
 
 watch(examTypeId, async () => {
-  if (examTypeId.value) {
-    problemTypeId.value = "";
-    availableProblems.value = [];
-    const { data } = await problemTypeStore.getProblemTypesByExamTypeId(
-      Number(examTypeId.value)
-    );
-    if (data.value) problemTypes.value = data.value;
-  }
+  problemTypeId.value = "";
+  getProblems();
 });
 
 watch(problemTypeId, async () => {
-  if (problemTypeId.value) {
-    loadingAvailableProblems.value = true;
-    const { data } = await problemStore.getProblemsByProblemTypeId(
-      problemTypeId.value
-    );
-    loadingAvailableProblems.value = false;
-    if (data.value) availableProblems.value = [...data.value];
-  }
+  getProblems();
 });
 
 watch(
@@ -332,11 +351,34 @@ const handleSelectAvailableProblems = (id: number) => {
 
 const handleSelectSelectedProblems = (id: number) => {
   const index = selectedProblems.value.findIndex((x) => x.id === id);
-  const [selectedProblem] = selectedProblems.value.splice(index, 1);
-  availableProblems.value.push(selectedProblem);
+  selectedProblems.value.splice(index, 1);
+  getProblems();
 };
 
 const debouncedCheckExistingAssessmentTitle = useDebounce(
   assessmentStore.checkExistingAssessmentTitle
 );
+
+const getProblems = () => {
+  if (examTypes.value) {
+    const examType = examTypes.value.find(
+      (x) => x.id === Number(examTypeId.value)
+    )!;
+
+    if (examTypeId.value && !problemTypeId.value) {
+      availableProblems.value = [
+        ...examType.problem_types.flatMap((x) => x.problems),
+      ];
+      problemTypes.value = examType.problem_types;
+    } else if (examTypeId.value && problemTypeId.value) {
+      const problemType = examType.problem_types.find(
+        (x) => x.id === Number(problemTypeId.value)
+      )!;
+
+      availableProblems.value = [...problemType.problems];
+    }
+
+    removeDuplicateProblems();
+  }
+};
 </script>

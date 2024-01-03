@@ -72,6 +72,23 @@ export const useAssessmentStore = defineStore("assessments", () => {
     return result;
   };
 
+  const updateAssessment = async (
+    id: number,
+    payload: CreateAssessmentPayload
+  ) => {
+    const result = await useAPI<Assessment>(`/assessments/${id}}`, {
+      method: "put",
+      body: payload,
+      transform: (data: any) => {
+        return data.data as Assessment;
+      },
+    });
+
+    if (!result.error.value) return await getAssessments(1, true);
+
+    return result;
+  };
+
   const removeAssessment = async (id: number) => {
     const result = await useAPI(`/assessments/${id}`, {
       method: "delete",
@@ -88,6 +105,7 @@ export const useAssessmentStore = defineStore("assessments", () => {
     getAssessment,
     checkExistingAssessmentTitle,
     createAssessment,
+    updateAssessment,
     removeAssessment,
   };
 });
