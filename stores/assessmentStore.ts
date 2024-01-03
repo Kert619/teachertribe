@@ -3,7 +3,6 @@ import type {
   Assessment,
   CreateAssessmentPayload,
 } from "@/types/assessment";
-import type { IsExist } from "@/types/isExist";
 
 export const useAssessmentStore = defineStore("assessments", () => {
   const assessments = ref<AssessmentPaginated>();
@@ -44,19 +43,19 @@ export const useAssessmentStore = defineStore("assessments", () => {
   };
 
   const checkExistingAssessmentTitle = async (title: string) => {
-    const result = await useAPI<IsExist>(
+    const result = await useAPI<{ count: number }>(
       "/assessments/check-existing-assessment-title",
       {
         method: "post",
         body: { assessment_title: title },
         transform: (data: any) => {
-          return data.data as IsExist;
+          return data.data;
         },
       }
     );
 
-    if (result.data.value && result.data.value.isExist) return true;
-    return false;
+    if (result.data.value) return result.data.value.count;
+    return 0;
   };
 
   const createAssessment = async (payload: CreateAssessmentPayload) => {

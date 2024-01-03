@@ -1,4 +1,4 @@
-import type { ExamType } from "../types//examType";
+import type { ExamType } from "@/types/ExamType";
 
 export const useExamTypeStore = defineStore("examTypeStore", () => {
   const examTypes = ref<ExamType[]>([]);

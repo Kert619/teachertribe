@@ -309,8 +309,8 @@
 
 <script setup lang="ts">
 import * as yup from "yup";
-import type { Examinee } from "@/types/assessmentExaminee";
 import Swal from "sweetalert2";
+import type { ExamineePayload } from "@/types/assessmentExaminee";
 
 useHead({
   title: "Teacher Tribe - Add Examinees",
@@ -411,22 +411,25 @@ const handleDeleted = (fields: any, id: number) => {
 };
 
 const handleInvited = async (examinees: any) => {
-  const newExaminees: Examinee[] = examinees.map((x: any) => {
-    return {
-      first_name: x.first_name,
-      last_name: x.last_name,
-      email: x.email,
-      contact: x.contact,
-      group_id: x.group_id,
-      test_mode: x.test_mode,
-      schedule_from: x.schedule_from,
-      schedule_to: x.schedule_to,
-    };
-  });
+  const newExaminees: ExamineePayload[] = examinees.map(
+    (x: any): ExamineePayload => {
+      return {
+        first_name: x.first_name,
+        last_name: x.last_name,
+        email: x.email,
+        contact: x.contact,
+        group_id: x.group_id,
+        test_mode: x.test_mode,
+        schedule_from: x.schedule_from,
+        schedule_to: x.schedule_to,
+      };
+    }
+  );
 
   loading.value = true;
   const result = await assessmentExamineeStore.createAssessmentExaminees({
     assessment_id: assessment.value!.id,
+    subject: subject.value,
     examinees: newExaminees,
   });
   loading.value = false;

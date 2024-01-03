@@ -25,12 +25,24 @@
 
     <div class="text-white whitespace-nowrap">
       <span class="p-3 bg-green-600">{{
-        `Done(${assessment.completed})`
+        `Done(${
+          assessment.assessment_examinees.filter(
+            (x) => x.status === "Completed"
+          ).length
+        })`
       }}</span>
       <span class="p-3 bg-yellow-500">{{
-        `On-Going(${assessment.ongoing})`
+        `On-Going(${
+          assessment.assessment_examinees.filter((x) => x.status === "On-Going")
+            .length
+        })`
       }}</span>
-      <span class="p-3 bg-red-600">{{ `Pending(${assessment.pending})` }}</span>
+      <span class="p-3 bg-red-600">{{
+        `Pending(${
+          assessment.assessment_examinees.filter((x) => x.status === "Pending")
+            .length
+        })`
+      }}</span>
     </div>
 
     <button class="btn btn-primary" @click="handleDeleted">

@@ -38,3 +38,26 @@ export interface BaseGroup {
   id: number;
   group_name: string;
 }
+
+export interface BaseExaminee {
+  first_name: string;
+  last_name: string;
+  email: string;
+  contact: string;
+  last_school_attended: string;
+  degree: string;
+  field_of_study: string;
+  programming_experience: string;
+}
+
+export interface BaseAssessmentExaminee {
+  pin: string;
+  test_mode: string;
+  schedule_from: string;
+  schedule_to: string;
+  started_on: string;
+  finished_on: string;
+  marks: string;
+  status: string;
+  retry_count: string;
+}

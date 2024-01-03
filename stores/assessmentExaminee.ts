@@ -1,24 +1,31 @@
-import type { CreateAssessmentExaminee } from "@/types/assessmentExaminee";
+import type { CreateAssessmentExamineePayload } from "@/types/assessmentExaminee";
+import type { AssessmentExaminees } from "@/types/assessment";
 
 export const useAssessmentExamineeStore = defineStore(
   "assessmentExaminee",
   () => {
     const createAssessmentExaminees = async (
-      payload: CreateAssessmentExaminee
+      payload: CreateAssessmentExamineePayload
     ) => {
-      const result = await useAPI("/assessment-examinees", {
-        method: "post",
-        body: payload,
-      });
+      const result = await useAPI<AssessmentExaminees[]>(
+        "/assessment-examinees",
+        {
+          method: "post",
+          body: payload,
+          transform: (data: any) => {
+            return data.data as AssessmentExaminees[];
+          },
+        }
+      );
 
-      if (!result.error.value) {
+      if (result.data.value) {
         const assessmentStore = useAssessmentStore();
         const assessment = assessmentStore.assessments?.data.find(
           (x) => x.id === payload.assessment_id
         );
 
         if (assessment) {
-          assessment.pending += payload.examinees.length;
+          assessment.assessment_examinees = result.data.value;
         }
       }
 

@@ -1,11 +1,20 @@
-import type { BaseAssessment, BaseProblem } from "@/types/common";
+import type {
+  BaseAssessment,
+  BaseProblem,
+  BaseAssessmentExaminee,
+  BaseExaminee,
+  BaseGroup,
+} from "@/types/common";
 import type { Meta, Links } from "@/types/pageMeta";
+
+export interface AssessmentExaminees extends BaseAssessmentExaminee {
+  examinee: BaseExaminee;
+  group: BaseGroup;
+}
 
 export interface Assessment extends BaseAssessment {
   assessment_problems: BaseProblem[];
-  pending: number;
-  ongoing: number;
-  completed: number;
+  assessment_examinees: AssessmentExaminees[];
 }
 
 export interface AssessmentPaginated {

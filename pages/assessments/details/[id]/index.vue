@@ -9,10 +9,10 @@
           <IconSearch />
           Preview
         </button>
-        <button class="btn btn-primary">
+        <NuxtLink :to="`/assessments/${data.id}/edit`" class="btn btn-primary">
           <IconEdit />
           Edit
-        </button>
+        </NuxtLink>
       </div>
       <h4 class="font-bold">{{ data.assessment_title }}</h4>
       <p>

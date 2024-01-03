@@ -19,17 +19,17 @@
 </template>
 
 <script setup lang="ts">
-import type { Problem } from "@/types/problem";
+import type { BaseProblem } from "@/types/common";
 import draggable from "vuedraggable";
 
 const props = defineProps<{
-  modelValue: Problem[];
+  modelValue: BaseProblem[];
   arrowPosition: "left" | "right";
 }>();
 
 const emits = defineEmits<{
   selected: [id: number];
-  "update:modelValue": [problems: Problem[]];
+  "update:modelValue": [problems: BaseProblem[]];
 }>();
 
 const handleSelect = (id: number) => {

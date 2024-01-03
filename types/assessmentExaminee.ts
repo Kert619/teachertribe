@@ -1,9 +1,16 @@
-export interface CreateAssessmentExaminee {
+import type {
+  BaseAssessmentExaminee,
+  BaseAssessment,
+  BaseGroup,
+  BaseExaminee,
+} from "@/types/common";
+export interface CreateAssessmentExamineePayload {
   assessment_id: number;
-  examinees: Examinee[];
+  subject: string;
+  examinees: ExamineePayload[];
 }
 
-export interface Examinee {
+export interface ExamineePayload {
   first_name: string;
   last_name: string;
   email: string;
@@ -12,4 +19,10 @@ export interface Examinee {
   group_id: number;
   schedule_from: string;
   schedule_to: string;
+}
+
+export interface AssessmentExaminee extends BaseAssessmentExaminee {
+  assessment: BaseAssessment;
+  examinee: BaseExaminee;
+  group: BaseGroup;
 }
