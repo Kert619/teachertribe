@@ -1,4 +1,5 @@
 import type { ProblemTestCase, TestCase } from "@/types/testcase";
+import { parse, type Rule, type Declaration } from "css";
 
 export function useTestCases(problem: string) {
   const testCases: ProblemTestCase[] = [
@@ -222,7 +223,127 @@ export function useTestCases(problem: string) {
         return testCases;
       },
     },
+    {
+      problem_name: "UNIVERSAL",
+      validate(code: string): TestCase[] {
+        const testCases = [
+          {
+            name: "All elements margin",
+            passed: false,
+            score: 3,
+          },
+          {
+            name: "All elements padding",
+            passed: false,
+            score: 3,
+          },
+          {
+            name: "Div children color",
+            passed: false,
+            score: 3,
+          },
+          {
+            name: "Div children display",
+            passed: false,
+            score: 3,
+          },
+          {
+            name: "Div children bg color",
+            passed: false,
+            score: 3,
+          },
+          {
+            name: "Div immediate child p font weight",
+            passed: false,
+            score: 3,
+          },
+          {
+            name: "Div immediate child p color",
+            passed: false,
+            score: 3,
+          },
+          {
+            name: "Div immediate child p bg color",
+            passed: false,
+            score: 3,
+          },
+          {
+            name: "Div direct child p color",
+            passed: false,
+            score: 3,
+          },
+          {
+            name: "Div direct child p bg color",
+            passed: false,
+            score: 3,
+          },
+        ];
+
+        try {
+          const rulesTestCases = [
+            `*{
+              margin: 0px;
+            }`,
+            `*{
+              padding: 2px;
+            }`,
+            `div#div1 *{
+              color: rgb(255,0,0);
+            }`,
+            `div#div1 *{
+              display: block;
+            }`,
+            `div#div1 *{
+              background-color: rgb(0,128,0);
+            }`,
+            `div#div1 + p{
+              font-weight: bold;
+            }`,
+            `div#div1 + p{
+              color: rgb(0,128,0);
+            }`,
+            `div#div1 + p{
+              background-color: rgb(255,0,0);
+            }`,
+            `div#div2 > p{
+              color: rgb(255,255,0);
+            }`,
+            `div#div2 > p{
+              background-color: rgb(0,0,255);
+            }`,
+          ];
+
+          const userRules = parse(code).stylesheet!.rules;
+          for (let i = 0; i < rulesTestCases.length; i++) {
+            const testCaseRules = parse(rulesTestCases[i]).stylesheet!.rules;
+            const isMatch = compareRules(userRules, testCaseRules);
+            testCases[i].passed = isMatch;
+          }
+        } catch (error) {}
+
+        return testCases;
+      },
+    },
   ];
 
   return testCases.find((x) => x.problem_name === problem);
 }
+
+const compareRules = (userRules: Rule[], testCaseRules: Rule[]) => {
+  let isMatch = false;
+  testCaseRules.forEach((testCaseRule) => {
+    const testCaseSelector = testCaseRule.selectors?.join(", ");
+    userRules.forEach((userRule) => {
+      const userSelector = userRule.selectors?.join(", ");
+      if (userSelector === testCaseSelector) {
+        isMatch = !!testCaseRule.declarations?.every((x: Declaration) =>
+          userRule.declarations?.some(
+            (y: Declaration) => x.property === y.property && x.value === y.value
+          )
+        );
+      }
+    });
+  });
+
+  return isMatch;
+};

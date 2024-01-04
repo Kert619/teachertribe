@@ -45,7 +45,7 @@
               <option disabled selected value="">Select</option>
               <option value="Low">Low</option>
               <option value="Medium">Medium</option>
-              <option value="Hight">High</option>
+              <option value="High">High</option>
             </VSelectInput>
 
             <VTextInput

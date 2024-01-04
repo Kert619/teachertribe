@@ -310,7 +310,7 @@ const submitForm = async (values: any) => {
         setup_time: values.setup_time,
         window_proctor: values.window_proctor,
         randomize: values.randomize,
-        problem_ids: selectedProblems.value.map((x) => x.id),
+        problem_ids: problemIds,
       });
       loading.value = false;
 

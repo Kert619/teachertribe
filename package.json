@@ -20,9 +20,11 @@
   },
   "dependencies": {
     "@pinia/nuxt": "^0.5.1",
+    "@types/css": "^0.0.37",
     "@vee-validate/nuxt": "^4.12.3",
     "@vee-validate/yup": "^4.12.3",
     "@vueup/vue-quill": "^1.2.0",
+    "css": "^3.0.0",
     "pinia": "^2.1.7",
     "sweetalert2": "^11.6.13",
     "vuedraggable": "^4.1.0"

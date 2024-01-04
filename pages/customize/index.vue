@@ -29,39 +29,29 @@ useHead({
 const { error } = await problemStore.getProblems();
 
 if (process.client) {
-  const testCases = useTestCases("General HTML");
-  if (testCases) {
-    const result = testCases.validate(`
-  <html>
-<body>
-<h1>Page Title</h1>
-<p><i>page body</i></p>
-<table>
-<tr>
-<td>C11</td>
-<td>C12</td>
-</tr>
-<tr>
-<td>C21</td>
-<td>C22</td>
-</tr>
-</table>
-<input type="date" name="bday"/>
-<input type="color"name="icolor"/>
-<input type="number" min="10" max="12"/>
-<input type="search" name="searchengine"/>
-<h2 style="background-color: rgb(30,30,255);">Heading</h2>
-<a href="url">link url</a>
-<ul>
-<li>A</li>
-<li>B</li>
-<li>C</li>
-</ul>
-</body>
-</html>
-`);
+  const testCases = useTestCases("UNIVERSAL")!;
+  const result = testCases.validate(`
+  *{
+margin:0px;
+padding:2px;
+}
+div#div1 *{
+color: rgb(255,0,0);
+display:block;
+background-color: rgb(0,128,0);
+}
+div#div1 + p{
+font-weight:bold;
+color: rgb(0,128,0);
+background-color: rgb(255,0,0);
+}
+div#div3 > p{
+color: rgb(255,255,0);
+background-color: rgb(0,0,255);
+}
 
-    console.log(result);
-  }
+  `);
+
+  console.log(result);
 }
 </script>
