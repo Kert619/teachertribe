@@ -1,8 +1,11 @@
-import type { User, LoginCredentials } from "../types/user";
+import type { User, LoginCredentials } from "@/types/user";
+import type { AssessmentExaminee } from "@/types/assessmentExaminee";
 
 export const useAuthStore = defineStore("auth", () => {
   const token = useCookie("__token__", { maxAge: 60 * 60 * 24 * 7 });
+  const pin = useCookie("__pin__", { maxAge: 60 * 60 * 24 * 7 });
   const user = ref<User | null>(null);
+  const assessmentExaminee = ref<AssessmentExaminee | null>(null);
 
   const fetchUser = async () => {
     const { data } = await useAPI<User>("/user", {
@@ -48,5 +51,34 @@ export const useAuthStore = defineStore("auth", () => {
     if (process.client) window.location.reload();
   };
 
-  return { token, user, fetchUser, login, reset, logout };
+  const verifyPin = async (_pin: string) => {
+    const result = await useAPI<AssessmentExaminee>("/verify-pin", {
+      method: "post",
+      body: { pin: _pin },
+      transform: (data: any) => {
+        return data.data as AssessmentExaminee;
+      },
+    });
+
+    if (result.data.value) {
+      assessmentExaminee.value = result.data.value;
+      pin.value = _pin;
+    } else {
+      pin.value = null;
+    }
+
+    return result;
+  };
+
+  return {
+    token,
+    user,
+    fetchUser,
+    login,
+    reset,
+    logout,
+    verifyPin,
+    pin,
+    assessmentExaminee,
+  };
 });
