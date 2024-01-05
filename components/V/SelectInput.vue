@@ -48,8 +48,8 @@ const value = computed({
   get() {
     return props.modelValue;
   },
-  set(value) {
-    emits("update:modelValue", value);
+  set(newVal) {
+    emits("update:modelValue", newVal);
   },
 });
 </script>

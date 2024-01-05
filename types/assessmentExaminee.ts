@@ -4,6 +4,8 @@ import type {
   BaseGroup,
   BaseExaminee,
   BaseProblem,
+  BaseProblemType,
+  BaseExamType,
 } from "@/types/common";
 export interface CreateAssessmentExamineePayload {
   assessment_id: number;
@@ -22,8 +24,16 @@ export interface ExamineePayload {
   schedule_to: string;
 }
 
+export interface ProblemType extends BaseProblemType {
+  exam_type: BaseExamType;
+}
+
+export interface AssessmentProblem extends BaseProblem {
+  problem_type: ProblemType;
+}
+
 export interface Assessment extends BaseAssessment {
-  assessment_problems: BaseProblem[];
+  assessment_problems: AssessmentProblem[];
 }
 
 export interface AssessmentExaminee extends BaseAssessmentExaminee {

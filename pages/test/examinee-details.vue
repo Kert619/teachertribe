@@ -4,44 +4,46 @@
       <h1 class="text-center">INSTRUCTIONS</h1>
       <div class="border-solid border-2 border-primary-500 p-6">
         Welcome to the coding assessment! This assessment is designed to
-        evaluate your coding skills. Please read the instructions carefully
-        before you begin.
+        evaluate your coding skills.
+        <strong>Please read the instructions</strong> carefully before you
+        begin.
       </div>
       <div class="border-solid border-2 border-primary-500 p-6">
-        You have a total of [X] minutes to complete the assessment. The timer
-        will start once you click the "Start" button. Please manage your time
-        wisely to attempt all the questions.
+        You have a total of <strong>{{ minutes }}</strong> minutes to complete
+        the assessment. The timer will start once you click the
+        <strong>Start Test</strong> button. Please manage your time wisely to
+        attempt all the questions.
       </div>
       <div class="border-solid border-2 border-primary-500 p-6">
-        There are [Y] coding questions in this assessment. Each question has a
-        set of criteria and possibly one or more test cases. Your code will be
-        evaluated based on correctness, efficiency, and adherence to the
-        provided criteria.
+        There are <strong>{{ problemCount }}</strong> coding questions in this
+        assessment. Each question has a set of criteria and possibly one or more
+        test cases. Your code will be evaluated based on correctness,
+        efficiency, and adherence to the provided criteria.
       </div>
       <div class="border-solid border-2 border-primary-500 p-6">
-        To submit your code, click the "Submit Code" button. You can submit your
-        code for each question individually. You can modify your submitted code
-        before the assessment time runs out.
+        To submit your code, click the <strong>Submit Code</strong> button. You
+        can submit your code for each question individually. You can modify your
+        submitted code before the assessment time runs out.
       </div>
       <div class="border-solid border-2 border-primary-500 p-6">
         Once you're done with all questions or the time limit is reached, click
-        the "Finish" button. You won't be able to make any changes after
-        finishing the test.
+        the <strong>End Test</strong> button. You won't be able to make any
+        changes after finishing the test.
       </div>
       <div class="border-solid border-2 border-primary-500 p-6">
-        This assessment is designed to evaluate your individual skills. Do not
-        seek assistance from others during the assessment, as it may lead to
-        inaccurate evaluation.
+        This assessment is designed to evaluate your individual skills.
+        <strong>Do not seek assistance from others during the assessment</strong
+        >, as it may lead to inaccurate evaluation.
       </div>
       <div class="border-solid border-2 border-primary-500 p-6">
-        If you encounter technical issues during the assessment, please contact
-        technical support. We recommend using a stable internet connection and a
-        compatible web browser.
+        If you encounter technical issues during the assessment,
+        <strong>please contact technical support</strong>. We recommend using a
+        stable internet connection and a compatible web browser.
       </div>
       <div class="border-solid border-2 border-primary-500 p-6">
         Take a deep breath, stay calm, and focus on solving the questions to the
-        best of your ability. Good luck! Your effort and skills will shine
-        through your code.
+        best of your ability. Good luck!
+        <strong>Your effort and skills will shine through your code.</strong>
       </div>
 
       <div class="mt-5">
@@ -67,7 +69,10 @@
             </VSelectInput>
 
             <div class="flex mt-5 justify-center">
-              <button class="btn btn-primary btn-wide">Start Test</button>
+              <button class="btn btn-primary btn-wide" :disabled="loading">
+                <span v-if="loading" class="loading loading-spinner"></span>
+                Start Test
+              </button>
             </div>
           </VeeForm>
         </div>
@@ -78,12 +83,35 @@
 
 <script setup lang="ts">
 import * as yup from "yup";
-definePageMeta({ layout: "welcome", middleware: ["pin"] });
+
+useHead({
+  title: "Teacher Tribe - Start Test",
+});
+
+definePageMeta({
+  layout: "welcome",
+  middleware: [
+    "pin",
+    () => {
+      const authStore = useAuthStore();
+      if (authStore.assessmentExaminee?.started_on) return navigateTo("/test");
+    },
+  ],
+});
+
+const examineeStore = useExamineeStore();
+const authStore = useAuthStore();
+
+const minutes = authStore.assessmentExaminee?.assessment.setup_time;
+const problemCount =
+  authStore.assessmentExaminee?.assessment.assessment_problems.length;
+
+if (authStore.assessmentExaminee?.started_on) await navigateTo("/test");
 
 const schema = yup.object({
-  last_school_attended: yup.string().required().label("Last school attended"),
-  degree: yup.string().required().label("Degree"),
-  field_of_study: yup.string().required().label("Field of study"),
+  last_school_attended: yup.string().nullable(),
+  degree: yup.string().nullable(),
+  field_of_study: yup.string().nullable(),
   programming_experience: yup
     .string()
     .required()
@@ -91,8 +119,22 @@ const schema = yup.object({
 });
 
 const progExp = ref("Less than 6 months");
+const loading = ref(false);
 
-const submitForm = (values: any) => {
-  console.log(values);
+const submitForm = async (values: any) => {
+  loading.value = true;
+  const { error } = await examineeStore.updateExamineeDetails({
+    pin: authStore.pin as string,
+    examinee_id: authStore.assessmentExaminee!.examinee.id,
+    last_school_attended: values.last_school_attended as string,
+    degree: values.degree as string,
+    field_of_study: values.field_of_study as string,
+    programming_experience: values.programming_experience as string,
+  });
+  loading.value = false;
+
+  if (!error.value) {
+    await navigateTo("/test");
+  }
 };
 </script>
