@@ -1,4 +1,7 @@
-import type { CreateAssessmentExamineePayload } from "@/types/assessmentExaminee";
+import type {
+  CreateAssessmentExamineePayload,
+  AssessmentExaminee,
+} from "@/types/assessmentExaminee";
 import type { AssessmentExaminees } from "@/types/assessment";
 
 export const useAssessmentExamineeStore = defineStore(
@@ -32,6 +35,18 @@ export const useAssessmentExamineeStore = defineStore(
       return result;
     };
 
-    return { createAssessmentExaminees };
+    const finishTest = async (id: number, pin: string) => {
+      const result = useAPI<AssessmentExaminee>(`/finish-test/${id}`, {
+        query: { pin },
+        method: "put",
+        transform: (data: any) => {
+          return data.data as AssessmentExaminee;
+        },
+      });
+
+      return result;
+    };
+
+    return { createAssessmentExaminees, finishTest };
   }
 );

@@ -1,7 +1,7 @@
 import type { ProblemTestCase, TestCase } from "@/types/testcase";
 import { parse, type Rule, type Declaration } from "css";
 
-export function useTestCases(problem: string) {
+export function useTestCases() {
   const testCases: ProblemTestCase[] = [
     {
       problem_name: "Noughts and Crosses",
@@ -12,7 +12,7 @@ export function useTestCases(problem: string) {
           { name: "Table tag", passed: false, score: 2 },
           { name: "Table attributes", passed: false, score: 2 },
           { name: "Table format", passed: false, score: 2 },
-          { name: "Figure style", passed: false, score: 2 },
+          { name: "Centralized figure", passed: false, score: 2 },
           { name: "Figure dimension", passed: false, score: 2 },
           { name: "Figure background", passed: false, score: 2 },
           { name: "Figure border", passed: false, score: 2 },
@@ -68,6 +68,9 @@ export function useTestCases(problem: string) {
                   const figureTag = centerTag?.querySelector("figure");
                   if (!centerTag || !figureTag) {
                     hasCentralizeFigureTag = false;
+                    hasFigureTagContainsInlineStyleDimensions = false;
+                    hasFigureTagContainsGrayBgColor = false;
+                    hasFigureTagContainsBorder = false;
                     break;
                   } else {
                     if (
@@ -88,13 +91,13 @@ export function useTestCases(problem: string) {
                   }
                 }
               }
-              if (hasCentralizeFigureTag) testCases[5].passed = true;
-              if (hasFigureTagContainsInlineStyleDimensions)
-                testCases[6].passed = true;
-              if (hasFigureTagContainsGrayBgColor) testCases[7].passed = true;
-              if (hasFigureTagContainsBorder) testCases[8].passed = true;
 
-              if ((testCases[5].passed = true)) {
+              testCases[5].passed = hasCentralizeFigureTag;
+              testCases[6].passed = hasFigureTagContainsInlineStyleDimensions;
+              testCases[7].passed = hasFigureTagContainsGrayBgColor;
+              testCases[8].passed = hasFigureTagContainsBorder;
+
+              if (testCases[5].passed === true) {
                 const middleBox = rows[1]
                   .querySelectorAll("td")[1]
                   .querySelector("center")
@@ -238,17 +241,17 @@ export function useTestCases(problem: string) {
             score: 3,
           },
           {
-            name: "Div children color",
+            name: "All elements within div color",
             passed: false,
             score: 3,
           },
           {
-            name: "Div children display",
+            name: "All elements within div display",
             passed: false,
             score: 3,
           },
           {
-            name: "Div children bg color",
+            name: "All elements within div bg color",
             passed: false,
             score: 3,
           },
@@ -326,7 +329,11 @@ export function useTestCases(problem: string) {
     },
   ];
 
-  return testCases.find((x) => x.problem_name === problem);
+  const selectProblem = (problem: string) => {
+    return testCases.find((x) => x.problem_name === problem);
+  };
+
+  return { selectProblem };
 }
 
 const compareRules = (userRules: Rule[], testCaseRules: Rule[]) => {

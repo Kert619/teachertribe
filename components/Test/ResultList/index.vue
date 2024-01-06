@@ -1,11 +1,16 @@
 <template>
   <div class="space-y-3">
     <TestResultListItem
-      v-for="(_, idx) in 4"
-      :passed="false"
-      :test-case="`Test Case ${idx}`"
+      v-for="testCase in testCases"
+      :passed="testCase.passed"
+      :test-case="testCase.name"
     />
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import type { TestCase } from "@/types/testcase";
+defineProps<{
+  testCases: TestCase[];
+}>();
+</script>

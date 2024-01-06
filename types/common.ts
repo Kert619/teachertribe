@@ -52,6 +52,7 @@ export interface BaseExaminee {
 }
 
 export interface BaseAssessmentExaminee {
+  id: number;
   pin: string;
   test_mode: string;
   schedule_from: string;
@@ -61,4 +62,10 @@ export interface BaseAssessmentExaminee {
   marks: string;
   status: string;
   retry_count: string;
+}
+
+export interface BaseAnswer {
+  answer: string;
+  score_attained: number;
+  total_score: number;
 }

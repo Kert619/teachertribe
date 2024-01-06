@@ -35,7 +35,6 @@ export interface AssessmentProblem extends BaseProblem {
 export interface Assessment extends BaseAssessment {
   assessment_problems: AssessmentProblem[];
 }
-
 export interface AssessmentExaminee extends BaseAssessmentExaminee {
   assessment: Assessment;
   examinee: BaseExaminee;

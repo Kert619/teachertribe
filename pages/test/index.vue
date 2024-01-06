@@ -1,5 +1,6 @@
 <template>
   <div class="h-screen flex flex-col">
+    <FullscreenLoading v-if="loading" />
     <header class="p-3 bg-primary-400 flex justify-between">
       <img
         src="~/assets/images/logo_white.png"
@@ -19,7 +20,9 @@
             </option>
           </VSelectInput>
         </ClientOnly>
-        <button class="btn btn-sm btn-warning">End Test</button>
+        <NuxtLink to="/test/end" class="btn btn-sm btn-warning"
+          >End Test</NuxtLink
+        >
       </div>
     </header>
 
@@ -49,8 +52,14 @@
             ></div>
           </ClientOnly>
         </div>
-        <div class="bg-cyan-500 p-3">
-          <p class="text-white text-center">Time Remaining: 30:05</p>
+        <div
+          class="bg-cyan-500 p-3"
+          v-if="authStore.assessmentExaminee?.assessment.time_restriction"
+        >
+          <TestTimer
+            :total-minutes="authStore.assessmentExaminee?.assessment.setup_time"
+            :started-on="authStore.assessmentExaminee.started_on"
+          />
         </div>
       </div>
       <div
@@ -71,8 +80,20 @@
             ></CodeEditor>
           </ClientOnly>
         </div>
-        <div class="flex justify-end">
-          <button class="btn btn-primary">Submit Code</button>
+        <div
+          class="flex justify-end items-center"
+          :class="{ 'justify-between': errorSubmit }"
+        >
+          <p v-if="errorSubmit" class="text-red-500">
+            Error occured when submitting your code.
+          </p>
+          <button
+            class="btn btn-primary"
+            :disabled="code.length === 0"
+            @click="validateCode"
+          >
+            Submit Code
+          </button>
         </div>
       </div>
       <div
@@ -80,10 +101,19 @@
       >
         <h4 class="p-3 bg-cyan-500 text-white text-center">RESULT</h4>
         <div class="p-3 grow overflow-auto">
-          <TestResultList />
+          <TestResultList :test-cases="problemTestCases" />
         </div>
         <div class="bg-cyan-500 p-3">
-          <p class="text-white text-center">Test Cases Passed: 1 of 5</p>
+          <p class="text-white text-center">
+            <span v-if="problemTestCases.length === 0"
+              >Test cases result appear here</span
+            >
+            <span v-else
+              >Test Cases Passed:
+              {{ problemTestCases.filter((x) => x.passed).length }} of
+              {{ problemTestCases.length }}</span
+            >
+          </p>
         </div>
       </div>
     </div>
@@ -93,6 +123,8 @@
 <script setup lang="ts">
 import CodeEditor from "simple-code-editor";
 import type { BaseExamType, BaseProblem } from "@/types/common";
+import type { TestCase } from "@/types/testcase";
+import type { Answer } from "@/types/answer";
 
 useHead({
   title: "Teacher Tribe",
@@ -111,6 +143,11 @@ definePageMeta({
 });
 
 const authStore = useAuthStore();
+const testCases = useTestCases();
+const answerStore = useAnswerStore();
+
+const loading = ref(false);
+const errorSubmit = ref(false);
 
 const examTypeId = ref("");
 const problemId = ref("");
@@ -120,6 +157,9 @@ const problems = ref<BaseProblem[]>([]);
 const editorKey = ref(0);
 
 const currentProblem = ref<BaseProblem>();
+const currentAnsweredProblem = ref<Answer | null>(null);
+
+const problemTestCases = ref<TestCase[]>([]);
 
 const editorLanguages = computed(() => {
   const examType = languages.value.find(
@@ -159,11 +199,58 @@ watch(
 
 watch(
   problemId,
-  (newValue) => {
+  async (newValue) => {
     currentProblem.value = problems.value.find(
       (x) => x.id === Number(newValue)
     );
+    problemTestCases.value = [];
+    code.value = "";
+
+    loading.value = true;
+    const { data: answer } =
+      await answerStore.getByAssessmentExamineeIdAndProblemId(
+        authStore.assessmentExaminee!.id,
+        currentProblem.value!.id,
+        authStore.assessmentExaminee!.pin
+      );
+
+    loading.value = false;
+
+    if (answer.value && process.client) {
+      currentAnsweredProblem.value = answer.value;
+      code.value = currentAnsweredProblem.value.answer;
+      const problem = testCases.selectProblem(
+        currentProblem.value!.problem_title
+      )!;
+      problemTestCases.value = problem.validate(code.value);
+    }
   },
   { immediate: true }
 );
+
+const validateCode = async () => {
+  const problem = testCases.selectProblem(currentProblem.value!.problem_title)!;
+  const result = problem.validate(code.value);
+
+  errorSubmit.value = false;
+  loading.value = true;
+
+  const { error } = await answerStore.submitAnswer({
+    assessment_examinee_id: authStore.assessmentExaminee!.id,
+    problem_id: currentProblem.value!.id,
+    pin: authStore.assessmentExaminee!.pin,
+    answer: code.value,
+    score_attained: result.reduce(
+      (acc, curr) => (curr.passed ? acc + curr.score : acc + 0),
+      0
+    ),
+    total_score: result.reduce((acc, cur) => acc + cur.score, 0),
+  });
+
+  loading.value = false;
+
+  if (error.value) errorSubmit.value = true;
+
+  problemTestCases.value = result;
+};
 </script>

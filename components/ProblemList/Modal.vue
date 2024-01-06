@@ -72,7 +72,10 @@ const emits = defineEmits<{
   closed: [];
 }>();
 
-const problemTestCases = useTestCases(props.problem.problem_title)!;
+const usetestCases = useTestCases();
+const problemTestCases = usetestCases.selectProblem(
+  props.problem.problem_title
+)!;
 
 const testCases = problemTestCases.validate("");
 

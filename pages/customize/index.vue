@@ -29,8 +29,9 @@ useHead({
 const { error } = await problemStore.getProblems();
 
 if (process.client) {
-  const testCases = useTestCases("UNIVERSAL")!;
-  const result = testCases.validate(`
+  const testCases = useTestCases()!;
+  const problem = testCases.selectProblem("UNIVERSAL")!;
+  const result = problem.validate(`
   *{
 margin:0px;
 padding:2px;
