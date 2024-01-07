@@ -442,6 +442,7 @@ const handleInvited = async (examinees: any) => {
     });
 
     await navigateTo("/assessments");
+    clearNuxtData();
   }
 };
 </script>

@@ -7,6 +7,8 @@ import type {
   BaseProblemType,
   BaseExamType,
 } from "@/types/common";
+
+import type { Meta, Links } from "@/types/pageMeta";
 export interface CreateAssessmentExamineePayload {
   assessment_id: number;
   subject: string;
@@ -39,4 +41,10 @@ export interface AssessmentExaminee extends BaseAssessmentExaminee {
   assessment: Assessment;
   examinee: BaseExaminee;
   group: BaseGroup;
+}
+
+export interface AssessmentExamineePaginated {
+  data: AssessmentExaminee[];
+  links: Links;
+  meta: Meta;
 }

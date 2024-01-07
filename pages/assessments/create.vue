@@ -257,6 +257,12 @@ const submitForm = async (values: any) => {
       <span>Window Proctor:</span>
       <span class="font-bold">${values.window_proctor ? "Yes" : "No"}</span>
 
+      <span>Total Marks:</span>
+      <span class="font-bold">${selectedProblems.value.reduce(
+        (acc, curr) => acc + curr.score,
+        0
+      )}</span>
+
       <span>Assessment Problems:</span>
       ${problemNameList.value}
     </div>

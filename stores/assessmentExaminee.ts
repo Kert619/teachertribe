@@ -1,12 +1,15 @@
 import type {
   CreateAssessmentExamineePayload,
   AssessmentExaminee,
+  AssessmentExamineePaginated,
 } from "@/types/assessmentExaminee";
 import type { AssessmentExaminees } from "@/types/assessment";
 
 export const useAssessmentExamineeStore = defineStore(
   "assessmentExaminee",
   () => {
+    const assessmentExaminees = ref<AssessmentExamineePaginated>();
+
     const createAssessmentExaminees = async (
       payload: CreateAssessmentExamineePayload
     ) => {
@@ -47,6 +50,50 @@ export const useAssessmentExamineeStore = defineStore(
       return result;
     };
 
-    return { createAssessmentExaminees, finishTest };
+    const getAssessmentExaminees = async (
+      search: string = "",
+      page: number = 1
+    ) => {
+      const nuxtApp = useNuxtApp();
+
+      const result = await useAPI<AssessmentExamineePaginated>(
+        `/assessment-examinees?page=${page}&per_page=${5}&search=${search}`,
+        {
+          getCachedData: (key) => {
+            return nuxtApp.static.data[key] ?? nuxtApp.payload.data[key];
+          },
+        }
+      );
+
+      if (result.data.value) assessmentExaminees.value = result.data.value;
+
+      return result;
+    };
+
+    const getAssessmentExaminee = async (id: number) => {
+      const nuxtApp = useNuxtApp();
+
+      const result = await useAPI<AssessmentExaminee>(
+        `/assessment-examinees/${id}`,
+        {
+          getCachedData: (key) => {
+            return nuxtApp.static.data[key] ?? nuxtApp.payload.data[key];
+          },
+          transform: (data: any) => {
+            return data.data as AssessmentExaminee;
+          },
+        }
+      );
+
+      return result;
+    };
+
+    return {
+      assessmentExaminees,
+      createAssessmentExaminees,
+      finishTest,
+      getAssessmentExaminees,
+      getAssessmentExaminee,
+    };
   }
 );

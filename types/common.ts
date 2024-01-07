@@ -22,6 +22,7 @@ export interface BaseProblem {
   duration: number;
   instructions: string;
   date_created: string;
+  score: number;
 }
 
 export interface BaseAssessment {

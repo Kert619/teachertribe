@@ -339,13 +339,17 @@ export function useTestCases() {
 const compareRules = (userRules: Rule[], testCaseRules: Rule[]) => {
   let isMatch = false;
   testCaseRules.forEach((testCaseRule) => {
-    const testCaseSelector = testCaseRule.selectors?.join(", ");
+    const testCaseSelector = normalizeWhitespace(
+      testCaseRule.selectors
+    )?.trim();
     userRules.forEach((userRule) => {
-      const userSelector = userRule.selectors?.join(", ");
-      if (userSelector === testCaseSelector) {
+      const userSelector = normalizeWhitespace(userRule.selectors)?.trim();
+      if (userSelector?.trim() === testCaseSelector?.trim()) {
         isMatch = !!testCaseRule.declarations?.every((x: Declaration) =>
           userRule.declarations?.some(
-            (y: Declaration) => x.property === y.property && x.value === y.value
+            (y: Declaration) =>
+              x.property?.trim() === y.property?.trim() &&
+              x.value?.trim() === y.value?.trim()
           )
         );
       }
@@ -353,4 +357,8 @@ const compareRules = (userRules: Rule[], testCaseRules: Rule[]) => {
   });
 
   return isMatch;
+};
+
+const normalizeWhitespace = (str?: string[]): string | undefined => {
+  return str?.map((s) => s.replace(/\s+/g, " ").trim()).join(", ");
 };

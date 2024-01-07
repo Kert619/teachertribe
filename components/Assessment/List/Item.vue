@@ -9,9 +9,6 @@
       >
         <IconPersonPlus width="24" height="24" />
       </NuxtLink>
-      <button class="btn btn-ghost">
-        <IconEye width="24" height="24" />
-      </button>
     </div>
 
     <div class="space-y-1">
