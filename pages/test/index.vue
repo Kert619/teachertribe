@@ -71,6 +71,7 @@
               theme="github"
               :copy-code="false"
               border-radius="0"
+              s
               width="100%"
               height="100%"
               :line-nums="true"
@@ -121,6 +122,7 @@
 </template>
 
 <script setup lang="ts">
+import hljs from "highlight.js";
 import CodeEditor from "simple-code-editor";
 import type { BaseExamType, BaseProblem } from "@/types/common";
 import type { TestCase } from "@/types/testcase";

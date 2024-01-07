@@ -25,11 +25,11 @@
     "@vee-validate/yup": "^4.12.3",
     "@vueup/vue-quill": "^1.2.0",
     "css": "^3.0.0",
+    "highlight.js": "11.8.0",
     "pinia": "^2.1.7",
     "simple-code-editor": "^2.0.9",
     "sweetalert2": "^11.6.13",
-    "vuedraggable": "^4.1.0",
-    "highlight.js": "11.8.0"
+    "vuedraggable": "^4.1.0"
   },
   "resolutions": {
     "highlight.js": "11.8.0"

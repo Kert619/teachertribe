@@ -6,6 +6,7 @@ import type {
   BaseProblem,
   BaseProblemType,
   BaseExamType,
+  BaseAnswer,
 } from "@/types/common";
 
 import type { Meta, Links } from "@/types/pageMeta";
@@ -37,10 +38,16 @@ export interface AssessmentProblem extends BaseProblem {
 export interface Assessment extends BaseAssessment {
   assessment_problems: AssessmentProblem[];
 }
+
+export interface Answer extends BaseAnswer {
+  problem: BaseProblem;
+}
 export interface AssessmentExaminee extends BaseAssessmentExaminee {
   assessment: Assessment;
   examinee: BaseExaminee;
   group: BaseGroup;
+  problems: BaseProblem[];
+  answers: Answer[];
 }
 
 export interface AssessmentExamineePaginated {
