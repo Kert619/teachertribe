@@ -70,6 +70,24 @@ export const useAuthStore = defineStore("auth", () => {
     return result;
   };
 
+  const fetchPin = async (_pin: string) => {
+    const result = await useAPI<AssessmentExaminee>("/fetch-pin", {
+      query: { pin: _pin },
+      transform: (data: any) => {
+        return data.data as AssessmentExaminee;
+      },
+    });
+
+    if (result.data.value) {
+      assessmentExaminee.value = result.data.value;
+      pin.value = _pin;
+    } else {
+      pin.value = null;
+    }
+
+    return result;
+  };
+
   return {
     token,
     user,
@@ -78,6 +96,7 @@ export const useAuthStore = defineStore("auth", () => {
     reset,
     logout,
     verifyPin,
+    fetchPin,
     pin,
     assessmentExaminee,
   };

@@ -25,4 +25,9 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+  vite: {
+    optimizeDeps: {
+      include: ["highlight.js"],
+    },
+  },
 });

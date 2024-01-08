@@ -1,6 +1,8 @@
 export default defineNuxtPlugin(async () => {
   const authStore = useAuthStore();
-  if (!authStore.user && authStore.token) {
+  const route = useRoute();
+
+  if (!authStore.user && authStore.token && !route.path.startsWith("/test")) {
     await authStore.fetchUser();
   }
 });

@@ -106,8 +106,6 @@ const minutes = authStore.assessmentExaminee?.assessment.setup_time;
 const problemCount =
   authStore.assessmentExaminee?.assessment.assessment_problems.length;
 
-if (authStore.assessmentExaminee?.started_on) await navigateTo("/test");
-
 const schema = yup.object({
   last_school_attended: yup.string().nullable(),
   degree: yup.string().nullable(),

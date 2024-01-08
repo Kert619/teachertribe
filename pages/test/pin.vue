@@ -42,7 +42,11 @@ const submitForm = async (values: any, { setFieldError }: any) => {
   const { data } = await authStore.verifyPin(values.pin as string);
   loading.value = false;
   if (data.value) {
-    await navigateTo("/test/examinee-details");
+    if (data.value.started_on) {
+      await navigateTo("/test");
+    } else {
+      await navigateTo("/test/examinee-details");
+    }
   } else {
     setFieldError("pin", "Invalid test pin");
   }

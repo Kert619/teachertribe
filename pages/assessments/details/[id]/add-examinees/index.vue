@@ -359,10 +359,27 @@ const schema = yup.object().shape({
     .array()
     .of(
       yup.object().shape({
-        first_name: yup.string().required().label("First Name"),
-        last_name: yup.string().required().label("Last Name"),
-        email: yup.string().required().email().label("Email"),
-        contact: yup.string().required().label("Contact"),
+        first_name: yup
+          .string()
+          .trim("First Name is a required field")
+          .required()
+          .label("First Name"),
+        last_name: yup
+          .string()
+          .required()
+          .trim("Last Name is a required field")
+          .label("Last Name"),
+        email: yup
+          .string()
+          .required()
+          .trim("Email is a required field")
+          .email()
+          .label("Email"),
+        contact: yup
+          .string()
+          .required()
+          .trim("Contact is a required field")
+          .label("Contact"),
         test_mode: yup
           .string()
           .required()

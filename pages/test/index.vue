@@ -20,8 +20,10 @@
             </option>
           </VSelectInput>
         </ClientOnly>
-        <NuxtLink to="/test/end" class="btn btn-sm btn-warning"
-          >End Test</NuxtLink
+        <NuxtLink
+          to="/test/end"
+          class="btn btn-sm btn-warning text-white font-normal"
+          >Finish Test</NuxtLink
         >
       </div>
     </header>
@@ -62,35 +64,31 @@
           />
         </div>
       </div>
-      <div
-        class="col-span-12 sm:col-span-6 border-2 flex flex-col p-3 gap-3 min-h-[300px]"
-      >
+      <div class="col-span-12 sm:col-span-6 border flex flex-col min-h-[300px]">
         <div class="grow overflow-auto">
           <ClientOnly>
             <CodeEditor
               theme="github"
               :copy-code="false"
               border-radius="0"
-              s
               width="100%"
               height="100%"
               :line-nums="true"
-              :languages="editorLanguages"
               v-model="code"
+              :languages="editorLanguages"
               :key="editorKey"
             ></CodeEditor>
           </ClientOnly>
         </div>
         <div
-          class="flex justify-end items-center"
+          class="flex justify-end items-center p-3"
           :class="{ 'justify-between': errorSubmit }"
         >
           <p v-if="errorSubmit" class="text-red-500">
             Error occured when submitting your code.
           </p>
           <button
-            class="btn btn-primary"
-            :disabled="code.length === 0"
+            class="btn btn-warning btn-sm text-white font-normal"
             @click="validateCode"
           >
             Submit Code
@@ -107,7 +105,7 @@
         <div class="bg-cyan-500 p-3">
           <p class="text-white text-center">
             <span v-if="problemTestCases.length === 0"
-              >Test cases result appear here</span
+              >Test cases result will appear here</span
             >
             <span v-else
               >Test Cases Passed:
@@ -148,6 +146,15 @@ const authStore = useAuthStore();
 const testCases = useTestCases();
 const answerStore = useAnswerStore();
 
+if (process.client && authStore.assessmentExaminee?.test_mode === "Secure") {
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) {
+      authStore.pin = null;
+      window.location.reload();
+    }
+  });
+}
+
 const loading = ref(false);
 const errorSubmit = ref(false);
 
@@ -170,10 +177,10 @@ const editorLanguages = computed(() => {
 
   if (examType) {
     if (examType.exam_type === "CSS") return [["css", "CSS"]];
-    if (examType.exam_type === "Javascript") return [["javascript", "JS"]];
+    if (examType.exam_type === "HTML") return [["html", "HTML"]];
   }
 
-  return [["html", "HTML"]];
+  return [["javascript", "JS"]];
 });
 
 authStore.assessmentExaminee?.assessment.assessment_problems.forEach((x) => {
@@ -231,6 +238,8 @@ watch(
 );
 
 const validateCode = async () => {
+  if (code.value.length === 0) return;
+
   const problem = testCases.selectProblem(currentProblem.value!.problem_title)!;
   const result = problem.validate(code.value);
 
