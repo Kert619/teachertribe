@@ -28,7 +28,8 @@
   .btn,
   .input,
   .select,
-  .textarea {
+  .textarea,
+  .file-input {
     @apply rounded-none;
   }
 

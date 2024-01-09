@@ -458,7 +458,7 @@ const handleInvited = async (examinees: any) => {
       icon: "success",
     });
 
-    await navigateTo("/assessments");
+    await navigateTo("/assessments", { replace: true });
     clearNuxtData();
   }
 };

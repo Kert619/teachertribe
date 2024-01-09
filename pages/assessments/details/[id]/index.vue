@@ -56,10 +56,13 @@
           <IconPlus />
           Add Examinee
         </NuxtLink>
-        <button class="btn btn-primary btn-wide">
+        <NuxtLink
+          :to="`/assessments/details/${data.id}/add-bundle`"
+          class="btn btn-primary btn-wide"
+        >
           <IconPlus />
           Add by Bundle
-        </button>
+        </NuxtLink>
       </div>
     </template>
   </div>
