@@ -203,7 +203,7 @@ const timeTaken = (startedOn: string, finishedOn: string) => {
 
 const handleBack = async () => {
   if (!window.history.state.back) {
-    await navigateTo("/assessments");
+    await navigateTo("/reports");
   } else {
     router.back();
   }

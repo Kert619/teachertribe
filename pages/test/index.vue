@@ -103,7 +103,8 @@
           <TestResultList :test-cases="problemTestCases" />
         </div>
         <div class="bg-cyan-500 p-3">
-          <p class="text-white text-center">
+          <p class="text-white flex justify-center items-center gap-1">
+            <IconTest width="24" height="24" />
             <span v-if="problemTestCases.length === 0"
               >Test cases result will appear here</span
             >

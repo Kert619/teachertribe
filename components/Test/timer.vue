@@ -1,5 +1,10 @@
 <template>
-  <p class="text-white text-center">Time Remaining: {{ formattedTime }}</p>
+  <p class="text-white flex justify-center items-center gap-1">
+    <IconTimer width="24" height="24" />
+    <span
+      >Time Remaining: <span class="font-bold">{{ formattedTime }}</span></span
+    >
+  </p>
 </template>
 
 <script setup lang="ts">

@@ -121,16 +121,16 @@ export function useTestCases() {
       problem_name: "General HTML",
       validate: (code: string): TestCase[] => {
         const testCases = [
-          { name: "H1 heading", passed: false, score: 2 },
-          { name: "Italic tag", passed: false, score: 2 },
-          { name: "Table format ok", passed: false, score: 2 },
-          { name: "Date input", passed: false, score: 2 },
-          { name: "Color input", passed: false, score: 2 },
-          { name: "Number input", passed: false, score: 2 },
-          { name: "Search input", passed: false, score: 2 },
-          { name: "H2 heading", passed: false, score: 2 },
-          { name: "Anchor link", passed: false, score: 2 },
-          { name: "Unordered list", passed: false, score: 2 },
+          { name: "H1 heading", passed: false, score: 1 },
+          { name: "Italic tag", passed: false, score: 1 },
+          { name: "Table format ok", passed: false, score: 1 },
+          { name: "Date input", passed: false, score: 1 },
+          { name: "Color input", passed: false, score: 1 },
+          { name: "Number input", passed: false, score: 1 },
+          { name: "Search input", passed: false, score: 1 },
+          { name: "H2 heading", passed: false, score: 1 },
+          { name: "Anchor link", passed: false, score: 1 },
+          { name: "Unordered list", passed: false, score: 1 },
         ];
 
         const parser = new DOMParser();
@@ -327,6 +327,82 @@ export function useTestCases() {
         return testCases;
       },
     },
+    {
+      problem_name: "Integers Sum",
+      validate(code: string): TestCase[] {
+        const testCases = [
+          {
+            name: "[1]",
+            passed: false,
+            score: 4,
+          },
+          {
+            name: "[1,2,3]",
+            passed: false,
+            score: 4,
+          },
+          {
+            name: "[]",
+            passed: false,
+            score: 4,
+          },
+          {
+            name: "[5, -6, 7, -4, 2]",
+            passed: false,
+            score: 4,
+          },
+          {
+            name: "[0]",
+            passed: false,
+            score: 4,
+          },
+        ];
+
+        code = sanatizeCode(code);
+
+        const regexPattern = /function\s+sum\(\)\s*\{[\s\S]*\}/;
+        const isMatch = regexPattern.test(code);
+        if (!isMatch) return testCases;
+        try {
+          let testCase;
+          let testFunction;
+          let result;
+
+          const functionTestCases = [
+            {
+              testCases: [1],
+              expected: 1,
+            },
+            {
+              testCases: [1, 2, 3],
+              expected: 6,
+            },
+            {
+              testCases: [],
+              expected: 0,
+            },
+            {
+              testCases: [5, -6, 7, -4, 2],
+              expected: 4,
+            },
+            {
+              testCases: [0],
+              expected: 0,
+            },
+          ];
+
+          for (let i = 0; i < functionTestCases.length; i++) {
+            testCase = code + `return sum(${functionTestCases[i].testCases})`;
+            testFunction = new Function(testCase);
+            result = testFunction();
+            if (result === functionTestCases[i].expected)
+              testCases[i].passed = true;
+          }
+        } catch (error) {}
+
+        return testCases;
+      },
+    },
   ];
 
   const selectProblem = (problem: string) => {
@@ -361,4 +437,37 @@ const compareRules = (userRules: Rule[], testCaseRules: Rule[]) => {
 
 const normalizeWhitespace = (str?: string[]): string | undefined => {
   return str?.map((s) => s.replace(/\s+/g, " ").trim()).join(", ");
+};
+
+const sanatizeCode = (code: string) => {
+  const keywords = [
+    "document\\..*;*",
+    "window\\..*;*",
+    "alert\\(.*\\);*",
+    "eval\\(.*\\);*",
+    "new Function\\(.*\\);*",
+    "XMLHttpRequest\\(.*\\);*",
+    "fetch\\(.*\\);*",
+    "setTimeout\\(.*\\);*",
+    "setInterval\\(.*\\);*",
+    "location\\..*",
+    "history\\..*",
+    "localStorage\\..*",
+    "sessionStorage\\..*",
+    "close\\(.*\\);*",
+    "open\\(.*\\);*",
+    "confirm\\(.*\\);*",
+    "prompt\\(.*\\);*",
+    "navigator\\..*",
+    "indexedDB\\..*",
+    "console\\..*",
+  ];
+
+  // Combine the keywords into a single regex pattern
+  const regexPattern = new RegExp(keywords.join("|"), "g");
+
+  // Remove occurrences of specified keywords
+  const modifiedCode = code.replace(regexPattern, "");
+
+  return modifiedCode;
 };

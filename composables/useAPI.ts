@@ -19,6 +19,7 @@ export function useAPI<T>(request: string, options: UseFetchOptions<T> = {}) {
     baseURL: "http://127.0.0.1:8000/api",
     method: "get",
     watch: false,
+    timeout: 1800000,
     ...options,
     headers,
     onResponseError({ response }) {

@@ -30,25 +30,18 @@ const { error } = await problemStore.getProblems();
 
 if (process.client) {
   const testCases = useTestCases()!;
-  const problem = testCases.selectProblem("UNIVERSAL")!;
+  const problem = testCases.selectProblem("Integers Sum")!;
   const result = problem.validate(`
-  *{
-margin:0px;
-padding:2px;
-}
-div#div1 *{
-color: rgb(255,0,0);
-display:block;
-background-color: rgb(0,128,0);
-}
-div#div1 + p{
-font-weight:bold;
-color: rgb(0,128,0);
-background-color: rgb(255,0,0);
-}
-div#div3 > p{
-color: rgb(255,255,0);
-background-color: rgb(0,0,255);
+  function sum(){
+    if(arguments.length === 0) return 0;
+   
+    let sum  = 0;
+    
+    for(let i = 0; i < arguments.length; i++){
+      sum +=arguments[i];
+    }
+
+    return sum;
 }
 
   `);
