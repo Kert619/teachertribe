@@ -149,10 +149,13 @@ const assessmentExamineeStore = useAssessmentExamineeStore();
 
 const route = useRoute();
 const page = route.query.page ? Number(route.query.page) : 1;
+const searchQuery = route.query.search as string;
 
 const pageLoading = ref(false);
 
 const search = ref("");
+
+if (searchQuery) search.value = searchQuery;
 
 const { error } = await assessmentExamineeStore.getAssessmentExaminees(
   search.value,
@@ -163,12 +166,16 @@ const debounceSearch = useDebounce(
   assessmentExamineeStore.getAssessmentExaminees
 );
 
-watch(search, () => debounceSearch(search.value));
+watch(search, async () => {
+  await debounceSearch(search.value);
+  await navigateTo({ query: { search: search.value } });
+});
 
 const handlePageChanged = async (page: number) => {
   pageLoading.value = true;
   await assessmentExamineeStore.getAssessmentExaminees(search.value, page);
   pageLoading.value = false;
+  await navigateTo({ query: { page, search: search.value } });
 };
 
 const timeTaken = (startedOn: string, finishedOn: string, status: string) => {

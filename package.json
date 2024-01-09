@@ -29,7 +29,8 @@
     "pinia": "^2.1.7",
     "simple-code-editor": "^2.0.9",
     "sweetalert2": "^11.6.13",
-    "vuedraggable": "^4.1.0"
+    "vuedraggable": "^4.1.0",
+    "xlsx": "^0.18.5"
   },
   "resolutions": {
     "highlight.js": "11.8.0"

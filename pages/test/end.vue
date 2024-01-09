@@ -76,13 +76,13 @@ const assessmentExamineeStore = useAssessmentExamineeStore();
 
 const loading = ref(false);
 
-const { data } = await answerStore.getAnswersByAssessmentExamineeId(
+const { data: answers } = await answerStore.getAnswersByAssessmentExamineeId(
   Number(authStore.assessmentExaminee!.id),
   authStore.pin!
 );
 
 const getStatus = (problemId: number) => {
-  const problem = data.value?.find((x) => x.problem.id === problemId);
+  const problem = answers.value?.find((x) => x.problem.id === problemId);
 
   if (problem && process.client) {
     const testCases = useTestCases();

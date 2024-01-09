@@ -363,6 +363,7 @@ export function useTestCases() {
         const regexPattern = /function\s+sum\(\)\s*\{[\s\S]*\}/;
         const isMatch = regexPattern.test(code);
         if (!isMatch) return testCases;
+
         try {
           let testCase;
           let testFunction;

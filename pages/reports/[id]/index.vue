@@ -8,7 +8,7 @@
         <h3 class="text-primary-500 font-bold mb-3 border-b-2">
           Examinee Information:
         </h3>
-        <div class="flex flex-wrap gap-3 mb-5">
+        <div class="flex flex-wrap gap-3 mb-8">
           <p class="bg-gray-200 p-3">
             <span class="font-bold">Name: </span>
             <span>{{
@@ -44,7 +44,7 @@
         <h3 class="text-primary-500 font-bold mb-3 border-b-2">
           Session Details:
         </h3>
-        <div class="flex flex-wrap gap-3 mb-5">
+        <div class="flex flex-wrap gap-3 mb-8">
           <p class="bg-gray-200 p-3">
             <span class="font-bold">Time limit: </span>
             <span>{{
@@ -64,7 +64,7 @@
         </div>
 
         <h3 class="text-primary-500 font-bold mb-3 border-b-2">Status:</h3>
-        <div class="flex flex-wrap gap-3 mb-5">
+        <div class="flex flex-wrap gap-3 mb-8">
           <p class="bg-gray-200 p-3">
             <span class="font-bold">Started on: </span>
             <span>{{ data.started_on }}</span>
@@ -80,7 +80,7 @@
         </div>
 
         <h3 class="text-primary-500 font-bold mb-3 border-b-2">Setup:</h3>
-        <div class="flex flex-wrap gap-3 mb-5">
+        <div class="flex flex-wrap gap-3 mb-8">
           <p class="bg-gray-200 p-3">
             <span class="font-bold">Test mode: </span>
             <span>{{ data.test_mode }}</span>

@@ -7,7 +7,7 @@
       <ClientOnly>
         <VeeForm
           class="mt-5"
-          :initial-values="initialData"
+          :initial-values="assessmentExamineeStore.initialData"
           :validation-schema="schema"
           v-slot="{ validate, values }"
         >
@@ -46,6 +46,7 @@
                           :name="`examinees[${idx}].first_name`"
                           size="input-sm"
                           :disabled="step === 2"
+                          v-model="field.value.first_name"
                         />
                       </div>
                     </td>
@@ -55,6 +56,7 @@
                           :name="`examinees[${idx}].last_name`"
                           size="input-sm"
                           :disabled="step === 2"
+                          v-model="field.value.last_name"
                         />
                       </div>
                     </td>
@@ -65,6 +67,7 @@
                           type="email"
                           size="input-sm"
                           :disabled="step === 2"
+                          v-model="field.value.email"
                         />
                       </div>
                     </td>
@@ -74,6 +77,7 @@
                           :name="`examinees[${idx}].contact`"
                           size="input-sm"
                           :disabled="step === 2"
+                          v-model="field.value.contact"
                         />
                       </div>
                     </td>
@@ -96,12 +100,14 @@
                               :name="`examinees[${idx}].group_id`"
                               disabled
                               size="input-sm"
+                              v-model="field.value.group_id"
                             />
                           </div>
                           <VTextInput
                             :name="`examinees[${idx}].group_name`"
                             disabled
                             size="input-sm"
+                            v-model="field.value.group_name"
                           />
                         </div>
 
@@ -134,12 +140,14 @@
                           type="datetime-local"
                           size="input-sm"
                           :disabled="step === 2"
+                          v-model="field.value.schedule_from"
                         />
                         <VTextInput
                           :name="`examinees[${idx}].schedule_to`"
                           type="datetime-local"
                           size="input-sm"
                           :disabled="step === 2"
+                          v-model="field.value.schedule_to"
                         />
                       </div>
                     </td>
@@ -338,22 +346,6 @@ const { data: assessment, error } = await assessmentStore.getAssessment(
 
 await groupStore.getGroups();
 
-const initialData = {
-  examinees: [
-    {
-      first_name: "",
-      last_name: "",
-      email: "",
-      contact: "",
-      test_mode: "Not Secure",
-      group_id: "",
-      group_name: "",
-      schedule_from: "",
-      schedule_to: "",
-    },
-  ],
-};
-
 const schema = yup.object().shape({
   examinees: yup
     .array()
@@ -452,6 +444,19 @@ const handleInvited = async (examinees: any) => {
   loading.value = false;
 
   if (!result.error.value) {
+    assessmentExamineeStore.initialData.examinees.length = 0;
+    assessmentExamineeStore.initialData.examinees.push({
+      first_name: "",
+      last_name: "",
+      contact: "",
+      email: "",
+      group_id: "",
+      group_name: "",
+      test_mode: "Not Secure",
+      schedule_from: "",
+      schedule_to: "",
+    });
+
     await Swal.fire({
       title: "Success",
       text: "Examinees have been invited",

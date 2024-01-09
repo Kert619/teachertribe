@@ -9,6 +9,21 @@ export const useAssessmentExamineeStore = defineStore(
   "assessmentExaminee",
   () => {
     const assessmentExaminees = ref<AssessmentExamineePaginated>();
+    const initialData = {
+      examinees: [
+        {
+          first_name: "",
+          last_name: "",
+          email: "",
+          contact: "",
+          test_mode: "Not Secure",
+          group_id: "",
+          group_name: "",
+          schedule_from: "",
+          schedule_to: "",
+        },
+      ],
+    };
 
     const createAssessmentExaminees = async (
       payload: CreateAssessmentExamineePayload
@@ -94,6 +109,7 @@ export const useAssessmentExamineeStore = defineStore(
       finishTest,
       getAssessmentExaminees,
       getAssessmentExaminee,
+      initialData,
     };
   }
 );
