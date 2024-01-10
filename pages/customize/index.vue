@@ -46,6 +46,6 @@ if (process.client) {
 
   `);
 
-  console.log(result);
+  // console.log(result);
 }
 </script>
