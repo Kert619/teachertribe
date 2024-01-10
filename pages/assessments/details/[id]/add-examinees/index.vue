@@ -367,11 +367,7 @@ const schema = yup.object().shape({
           .trim("Email is a required field")
           .email()
           .label("Email"),
-        contact: yup
-          .string()
-          .required()
-          .trim("Contact is a required field")
-          .label("Contact"),
+        contact: yup.string().nullable().label("Contact"),
         test_mode: yup
           .string()
           .required()

@@ -16,7 +16,7 @@ export function useAPI<T>(request: string, options: UseFetchOptions<T> = {}) {
   }
 
   const fetchOptions: UseFetchOptions<T> = {
-    baseURL: "http://127.0.0.1:8000/api",
+    baseURL: "https://teachertribe-api.fly.dev/api",
     method: "get",
     watch: false,
     timeout: 1800000,
