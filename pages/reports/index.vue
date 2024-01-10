@@ -113,14 +113,23 @@
               <td>{{ examinee.retry_count }}</td>
               <td>{{ examinee.status }}</td>
               <td>
-                <button
-                  @click="navigateTo(`/reports/${examinee.id}`)"
-                  class="btn btn-sm flex-nowrap"
-                  :disabled="examinee.status !== 'Completed'"
-                >
-                  <IconCardText />
-                  <span class="whitespace-nowrap">Detailed Report</span>
-                </button>
+                <div class="flex gap-3">
+                  <button
+                    @click="navigateTo(`/reports/${examinee.id}`)"
+                    class="btn btn-sm flex-nowrap"
+                    :disabled="examinee.status !== 'Completed'"
+                  >
+                    <IconCardText />
+                    <span class="whitespace-nowrap">Detailed Report</span>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-primary"
+                    @click="removeAssessmentExaminee(examinee.id)"
+                  >
+                    <IconArchive />
+                    Archive
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -137,10 +146,13 @@
     </template>
 
     <h4 v-else>No reports found...</h4>
+
+    <FullscreenLoading v-if="deleteLoading" />
   </PageContent>
 </template>
 
 <script setup lang="ts">
+import Swal from "sweetalert2";
 useHead({
   title: "Teacher Tribe - Reports",
 });
@@ -152,6 +164,7 @@ const page = route.query.page ? Number(route.query.page) : 1;
 const searchQuery = route.query.search as string;
 
 const pageLoading = ref(false);
+const deleteLoading = ref(false);
 
 const search = ref("");
 
@@ -195,5 +208,29 @@ const timeTaken = (startedOn: string, finishedOn: string, status: string) => {
   if (Number(seconds) < 10) seconds = "0" + seconds;
 
   return `${hours}:${minutes}:${seconds}`;
+};
+
+const removeAssessmentExaminee = async (id: number) => {
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, archive it!",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      deleteLoading.value = true;
+      await assessmentExamineeStore.removeAssessmentExaminee(id);
+      await navigateTo("/reports");
+      deleteLoading.value = false;
+      await Swal.fire({
+        title: "Success!",
+        text: "Examinee has been archived",
+        icon: "success",
+      });
+    }
+  });
 };
 </script>

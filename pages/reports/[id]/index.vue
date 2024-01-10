@@ -158,7 +158,7 @@
         </div>
       </div>
 
-      <div class="mt-5 flex justify-center gap-3">
+      <div class="mt-5 flex flex-wrap justify-center gap-3">
         <button class="btn" @click="handleBack">Back</button>
         <button class="btn btn-primary">Examinee Overview</button>
         <button class="btn btn-primary">Assessment Report</button>

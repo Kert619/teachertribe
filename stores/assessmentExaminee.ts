@@ -67,7 +67,8 @@ export const useAssessmentExamineeStore = defineStore(
 
     const getAssessmentExaminees = async (
       search: string = "",
-      page: number = 1
+      page: number = 1,
+      refresh = false
     ) => {
       const nuxtApp = useNuxtApp();
 
@@ -75,6 +76,10 @@ export const useAssessmentExamineeStore = defineStore(
         `/assessment-examinees?page=${page}&per_page=${5}&search=${search}`,
         {
           getCachedData: (key) => {
+            if (refresh) {
+              clearNuxtData();
+              return nuxtApp.static.data[key];
+            }
             return nuxtApp.static.data[key] ?? nuxtApp.payload.data[key];
           },
         }
@@ -103,6 +108,16 @@ export const useAssessmentExamineeStore = defineStore(
       return result;
     };
 
+    const removeAssessmentExaminee = async (id: number) => {
+      const result = await useAPI(`/assessment-examinees/${id}`, {
+        method: "delete",
+      });
+
+      if (!result.error.value) return await getAssessmentExaminees("", 1, true);
+
+      return result;
+    };
+
     return {
       assessmentExaminees,
       createAssessmentExaminees,
@@ -110,6 +125,7 @@ export const useAssessmentExamineeStore = defineStore(
       getAssessmentExaminees,
       getAssessmentExaminee,
       initialData,
+      removeAssessmentExaminee,
     };
   }
 );

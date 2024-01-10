@@ -73,7 +73,7 @@ const handleItemDeleted = async (id: number) => {
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, delete it!",
+    confirmButtonText: "Yes, archive it!",
   }).then(async (result) => {
     if (result.isConfirmed) {
       deleteLoading.value = true;
@@ -82,7 +82,7 @@ const handleItemDeleted = async (id: number) => {
       deleteLoading.value = false;
       await Swal.fire({
         title: "Success!",
-        text: "Assessment has been deleted",
+        text: "Assessment has been archived",
         icon: "success",
       });
     }

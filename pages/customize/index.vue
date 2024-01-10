@@ -1,9 +1,6 @@
 <template>
   <PageContent title="Custom Problem List">
-    <div class="flex justify-between items-center">
-      <NuxtLink to="/customize/create" class="underline"
-        >Add New Problem</NuxtLink
-      >
+    <div class="flex justify-end items-center">
       <div class="space-x-3">
         <span>Filter by:</span>
         <select class="select select-bordered select-sm">
@@ -28,24 +25,24 @@ useHead({
 
 const { error } = await problemStore.getProblems();
 
-if (process.client) {
-  const testCases = useTestCases()!;
-  const problem = testCases.selectProblem("Integers Sum")!;
-  const result = problem.validate(`
-  function sum(){
-    if(arguments.length === 0) return 0;
-   
-    let sum  = 0;
-    
-    for(let i = 0; i < arguments.length; i++){
-      sum +=arguments[i];
-    }
+// if (process.client) {
+//   const testCases = useTestCases()!;
+//   const problem = testCases.selectProblem("Integers Sum")!;
+//   const result = problem.validate(`
+//   function sum(){
+//     if(arguments.length === 0) return 0;
 
-    return sum;
-}
+//     let sum  = 0;
 
-  `);
+//     for(let i = 0; i < arguments.length; i++){
+//       sum +=arguments[i];
+//     }
 
-  // console.log(result);
-}
+//     return sum;
+// }
+
+//   `);
+
+//   console.log(result);
+// }
 </script>
