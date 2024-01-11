@@ -4,7 +4,7 @@
     <div class="w-full max-w-4xl mx-auto flex flex-col gap-3 my-14">
       <h2 class="text-center">ASSESSMENT END CONFIRMATION</h2>
       <hr class="h-[2px] border-none bg-primary-500" />
-      <div class="bg-cyan-500 p-3">
+      <div class="bg-primary-500 p-3">
         <TestTimer
           :total-minutes="authStore.assessmentExaminee!.assessment.setup_time"
           :started-on="authStore.assessmentExaminee!.started_on"

@@ -1,7 +1,7 @@
 <template>
   <div class="h-screen flex flex-col">
     <FullscreenLoading v-if="loading" />
-    <header class="p-3 bg-primary-400 flex justify-between">
+    <header class="p-3 bg-primary-500 flex justify-between">
       <img
         src="~/assets/images/logo_white.png"
         alt="Teacher tribe logo"
@@ -22,7 +22,7 @@
         </ClientOnly>
         <NuxtLink
           to="/test/end"
-          class="btn btn-sm btn-warning text-white font-normal"
+          class="btn btn-sm btn-error text-white font-normal"
           >Finish Test</NuxtLink
         >
       </div>
@@ -55,7 +55,7 @@
           </ClientOnly>
         </div>
         <div
-          class="bg-cyan-500 p-3"
+          class="bg-primary-500 p-3"
           v-if="authStore.assessmentExaminee?.assessment.time_restriction"
         >
           <TestTimer
@@ -76,6 +76,7 @@
               :line-nums="true"
               v-model="code"
               :languages="editorLanguages"
+              :header="false"
               :key="editorKey"
             ></CodeEditor>
           </ClientOnly>
@@ -88,7 +89,7 @@
             Error occured when submitting your code.
           </p>
           <button
-            class="btn btn-warning btn-sm text-white font-normal"
+            class="btn btn-error btn-sm text-white font-normal"
             @click="validateCode"
           >
             Submit Code
@@ -98,11 +99,11 @@
       <div
         class="col-span-12 sm:col-span-3 bg-white min-h-[300px] flex flex-col overflow-auto"
       >
-        <h4 class="p-3 bg-cyan-500 text-white text-center">RESULT</h4>
+        <h4 class="p-3 border text-center">RESULT</h4>
         <div class="p-3 grow overflow-auto">
           <TestResultList :test-cases="problemTestCases" />
         </div>
-        <div class="bg-cyan-500 p-3">
+        <div class="bg-primary-500 p-3">
           <p class="text-white flex justify-center items-center gap-1">
             <IconTest width="24" height="24" />
             <span v-if="problemTestCases.length === 0"
