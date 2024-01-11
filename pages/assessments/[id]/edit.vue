@@ -125,14 +125,14 @@
             <button
               type="submit"
               class="btn btn-primary btn-wide"
-              :disabled="selectedProblems.length === 0 || loading"
+              :disabled="selectedProblems.length === 0"
             >
-              <span v-if="loading" class="loading loading-spinner"></span>
               Save
             </button>
           </div>
         </VeeForm>
       </ClientOnly>
+      <FullscreenLoading v-if="loading" />
     </template>
   </div>
 </template>

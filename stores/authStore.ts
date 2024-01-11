@@ -1,4 +1,4 @@
-import type { User, LoginCredentials } from "@/types/user";
+import type { User, LoginCredentials, UpdateUserPayload } from "@/types/user";
 import type { AssessmentExaminee } from "@/types/assessmentExaminee";
 
 export const useAuthStore = defineStore("auth", () => {
@@ -88,6 +88,20 @@ export const useAuthStore = defineStore("auth", () => {
     return result;
   };
 
+  const updateUser = async (id: number, payload: UpdateUserPayload) => {
+    const result = await useAPI<User>(`/update-user/${id}`, {
+      method: "put",
+      body: payload,
+      transform: (data: any) => {
+        return data.data as User;
+      },
+    });
+
+    if (result.data.value) user.value = result.data.value;
+
+    return result;
+  };
+
   return {
     token,
     user,
@@ -99,5 +113,6 @@ export const useAuthStore = defineStore("auth", () => {
     fetchPin,
     pin,
     assessmentExaminee,
+    updateUser,
   };
 });

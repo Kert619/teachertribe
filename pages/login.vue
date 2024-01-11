@@ -1,6 +1,8 @@
 <template>
-  <div class="p-3 mt-0 sm:mt-10">
-    <div class="w-full max-w-md mx-auto shadow-normal p-5">
+  <div
+    class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px]"
+  >
+    <div class="w-full max-w-md mx-auto shadow-normal p-10">
       <img src="~/assets/images/logo.png" width="200" class="mx-auto mb-3" />
 
       <VeeForm :validation-schema="schema" @submit="submitForm">

@@ -6,3 +6,9 @@ export interface LoginCredentials {
   email: string;
   password: string;
 }
+
+export interface UpdateUserPayload {
+  name: string;
+  email: string;
+  password: string;
+}

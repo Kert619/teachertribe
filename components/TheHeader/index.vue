@@ -8,9 +8,9 @@
       />
 
       <div class="flex gap-3">
-        <button class="btn btn-ghost">
+        <NuxtLink to="/user" class="btn btn-ghost">
           <IconSettings width="24" height="24" />
-        </button>
+        </NuxtLink>
         <button class="btn btn-ghost" @click="logout">
           <IconLogout width="24" height="24" />
         </button>
