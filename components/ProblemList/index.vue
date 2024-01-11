@@ -6,6 +6,7 @@
           <th>#</th>
           <th>Problem Title</th>
           <th>Exam Type</th>
+          <th>Score</th>
           <th>Date Created</th>
           <th>Action</th>
         </tr>
@@ -16,6 +17,7 @@
           :id="problem.id"
           :problem-title="problem.problem_title"
           :exam-type="problem.problem_type.exam_type.exam_type"
+          :score="problem.score"
           :date-created="useDateFormat(problem.date_created)"
           v-for="(problem, index) in problemStore.problems"
           :key="problem.id"

@@ -3,6 +3,7 @@
     <td>{{ row }}</td>
     <td>{{ problemTitle }}</td>
     <td>{{ examType }}</td>
+    <td>{{ score }}</td>
     <td>{{ dateCreated }}</td>
     <td>
       <div class="whitespace-nowrap">
@@ -20,6 +21,7 @@ const props = defineProps<{
   id: number;
   problemTitle: string;
   examType: string;
+  score: number;
   dateCreated: string;
 }>();
 

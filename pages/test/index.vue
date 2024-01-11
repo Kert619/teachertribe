@@ -147,7 +147,7 @@ const authStore = useAuthStore();
 const testCases = useTestCases();
 const answerStore = useAnswerStore();
 
-if (process.client && authStore.assessmentExaminee?.test_mode === "Secure") {
+if (process.client && authStore.assessmentExaminee?.assessment.window_proctor) {
   document.addEventListener("visibilitychange", function () {
     if (document.hidden) {
       authStore.pin = null;

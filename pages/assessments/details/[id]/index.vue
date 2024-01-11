@@ -30,16 +30,16 @@
             <tr>
               <th></th>
               <th>Title</th>
-              <th>Description</th>
               <th>Difficulty</th>
+              <th>Score</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(problem, index) in data.assessment_problems">
               <th>{{ index + 1 }}</th>
               <td>{{ problem.problem_title }}</td>
-              <td>{{ problem.description }}</td>
               <td>{{ problem.difficulty }}</td>
+              <td>{{ problem.score }}</td>
             </tr>
           </tbody>
         </table>

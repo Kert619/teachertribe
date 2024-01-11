@@ -33,6 +33,7 @@ export interface BaseAssessment {
   setup_time: number;
   window_proctor: boolean;
   randomize: boolean;
+  created_at: string;
 }
 
 export interface BaseGroup {

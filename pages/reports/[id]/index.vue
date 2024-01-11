@@ -20,6 +20,10 @@
             <span>{{ data.examinee.email }}</span>
           </p>
           <p class="bg-gray-200 p-3">
+            <span class="font-bold">Contact: </span>
+            <span>{{ data.examinee.contact }}</span>
+          </p>
+          <p class="bg-gray-200 p-3">
             <span class="font-bold">Last school attended: </span>
             <span>{{ data.examinee.last_school_attended }}</span>
           </p>
@@ -37,7 +41,7 @@
           </p>
           <p class="bg-gray-200 p-3">
             <span class="font-bold">Score attained: </span>
-            <span>{{ data.marks }}</span>
+            <span>{{ data.marks }} ({{ getOverAllPercentage() }}%)</span>
           </p>
         </div>
 
@@ -63,15 +67,52 @@
           </p>
         </div>
 
-        <h3 class="text-primary-500 font-bold mb-3 border-b-2">Status:</h3>
+        <h3 class="text-primary-500 font-bold mb-3 border-b-2">Test Status:</h3>
         <div class="flex flex-wrap gap-3 mb-8">
           <p class="bg-gray-200 p-3">
+            <span class="font-bold">Created On: </span>
+            <span>
+              {{
+                new Date(data.assessment.created_at).toLocaleString("en-PH", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                })
+              }}</span
+            >
+          </p>
+          <p class="bg-gray-200 p-3">
             <span class="font-bold">Started on: </span>
-            <span>{{ data.started_on }}</span>
+            <span>
+              {{
+                new Date(data.started_on).toLocaleString("en-PH", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                })
+              }}</span
+            >
           </p>
           <p class="bg-gray-200 p-3">
             <span class="font-bold">Finished on: </span>
-            <span>{{ data.finished_on }}</span>
+            <span>
+              {{
+                new Date(data.finished_on).toLocaleString("en-PH", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                })
+              }}</span
+            >
           </p>
           <p class="bg-gray-200 p-3">
             <span class="font-bold">Test status: </span>
