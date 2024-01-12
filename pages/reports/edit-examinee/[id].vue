@@ -81,19 +81,18 @@ const id = route.params.id as string;
 
 const loading = ref(false);
 
-const { data, error } = await assessmentExamineeStore.getAssessmentExaminee(
-  +id,
-  false
+const { data, error } = await assessmentExamineeStore.getAssessmentExamineeEdit(
+  +id
 );
 
 const form = ref({
-  firstName: data.value!.examinee.first_name,
-  lastName: data.value!.examinee.last_name,
-  contact: data.value!.examinee.contact,
-  email: data.value!.examinee.email,
-  testMode: data.value!.test_mode,
-  scheduleFrom: data.value!.schedule_from,
-  scheduleTo: data.value!.schedule_to,
+  firstName: data.value?.examinee.first_name,
+  lastName: data.value?.examinee.last_name,
+  contact: data.value?.examinee.contact,
+  email: data.value?.examinee.email,
+  testMode: data.value?.test_mode,
+  scheduleFrom: data.value?.schedule_from,
+  scheduleTo: data.value?.schedule_to,
 });
 
 const schema = yup.object({

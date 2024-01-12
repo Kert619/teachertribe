@@ -91,14 +91,29 @@ export const useAssessmentExamineeStore = defineStore(
       return result;
     };
 
-    const getAssessmentExaminee = async (
-      id: number,
-      retrieveCompleted = true
-    ) => {
+    const getAssessmentExaminee = async (id: number) => {
       const nuxtApp = useNuxtApp();
 
       const result = await useAPI<AssessmentExaminee>(
-        `/assessment-examinees/${id}?retrieve_completed=${retrieveCompleted}`,
+        `/assessment-examinees/${id}`,
+        {
+          getCachedData: (key) => {
+            return nuxtApp.static.data[key] ?? nuxtApp.payload.data[key];
+          },
+          transform: (data: any) => {
+            return data.data as AssessmentExaminee;
+          },
+        }
+      );
+
+      return result;
+    };
+
+    const getAssessmentExamineeEdit = async (id: number) => {
+      const nuxtApp = useNuxtApp();
+
+      const result = await useAPI<AssessmentExaminee>(
+        `/assessment-examinees/show-edit/${id}`,
         {
           getCachedData: (key) => {
             return nuxtApp.static.data[key] ?? nuxtApp.payload.data[key];
@@ -161,6 +176,7 @@ export const useAssessmentExamineeStore = defineStore(
       removeAssessmentExaminee,
       incrementRetryCount,
       updateExamineeAssessment,
+      getAssessmentExamineeEdit,
     };
   }
 );
