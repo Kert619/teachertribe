@@ -2,15 +2,22 @@
   <p class="text-white flex justify-center items-center gap-1">
     <IconTimer width="24" height="24" />
     <span
-      >Time Remaining: <span class="font-bold">{{ formattedTime }}</span></span
-    >
+      >Time Remaining:
+      <span v-if="timeRestriction" class="font-bold">{{ formattedTime }}</span>
+      <span v-else="time_restriction" class="font-bold">n/a</span>
+    </span>
   </p>
 </template>
 
 <script setup lang="ts">
 const props = defineProps<{
+  timeRestriction: boolean;
   totalMinutes: number;
   startedOn: string;
+}>();
+
+const emits = defineEmits<{
+  timeOut: [];
 }>();
 
 let totalSeconds = props.totalMinutes * 60;
@@ -39,6 +46,7 @@ function updateTimer() {
 
   if (totalSeconds <= 0) {
     clearInterval(countdownInterval);
+    emits("timeOut");
   } else {
     totalSeconds--;
   }

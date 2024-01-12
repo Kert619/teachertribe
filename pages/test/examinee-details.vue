@@ -107,9 +107,9 @@ const problemCount =
   authStore.assessmentExaminee?.assessment.assessment_problems.length;
 
 const schema = yup.object({
-  last_school_attended: yup.string().nullable(),
-  degree: yup.string().nullable(),
-  field_of_study: yup.string().nullable(),
+  last_school_attended: yup.string().required().label("Last School Attended"),
+  degree: yup.string().required().label("Degree"),
+  field_of_study: yup.string().required().label("Field of Study"),
   programming_experience: yup
     .string()
     .required()
@@ -132,7 +132,7 @@ const submitForm = async (values: any) => {
   loading.value = false;
 
   if (!error.value) {
-    await navigateTo("/test");
+    await navigateTo("/test", { replace: true });
   }
 };
 </script>

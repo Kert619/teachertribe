@@ -6,8 +6,10 @@
       <hr class="h-[2px] border-none bg-primary-500" />
       <div class="bg-primary-500 p-3">
         <TestTimer
+          :time-restriction="!!authStore.assessmentExaminee!.assessment.time_restriction"
           :total-minutes="authStore.assessmentExaminee!.assessment.setup_time"
           :started-on="authStore.assessmentExaminee!.started_on"
+          @time-out="handleTimeOut"
         />
       </div>
 
@@ -112,14 +114,24 @@ const finishTest = async () => {
   loading.value = false;
 
   if (data.value) {
+    authStore.pin = null;
+
     await Swal.fire({
       title: "Test Finished",
       text: "Thanks for taking the test",
       icon: "success",
     });
 
-    authStore.pin = null;
-    window.location.reload();
+    await navigateTo("https://www.coderstribe.net", {
+      replace: true,
+      external: true,
+    });
+  }
+};
+
+const handleTimeOut = async () => {
+  if (authStore.assessmentExaminee?.assessment.time_restriction) {
+    await finishTest();
   }
 };
 </script>

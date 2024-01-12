@@ -17,16 +17,16 @@ export interface CreateAssessmentExamineePayload {
 }
 
 export interface ExamineePayload {
+  examinee_id?: number;
   first_name: string;
   last_name: string;
   email: string;
   contact: string;
   test_mode: string;
-  group_id: number;
+  group_id?: number;
   schedule_from: string;
   schedule_to: string;
 }
-
 export interface ProblemType extends BaseProblemType {
   exam_type: BaseExamType;
 }

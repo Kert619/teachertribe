@@ -63,7 +63,7 @@ export interface BaseAssessmentExaminee {
   finished_on: string;
   marks: string;
   status: string;
-  retry_count: string;
+  retry_count: number;
 }
 
 export interface BaseAnswer {

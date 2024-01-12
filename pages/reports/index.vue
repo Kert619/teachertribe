@@ -115,6 +115,14 @@
               <td>
                 <div class="flex gap-3">
                   <button
+                    @click="navigateTo(`/reports/edit-examinee/${examinee.id}`)"
+                    class="btn btn-sm flex-nowrap"
+                    :disabled="examinee.status === 'Completed'"
+                  >
+                    <IconEdit />
+                    Edit
+                  </button>
+                  <button
                     @click="navigateTo(`/reports/${examinee.id}`)"
                     class="btn btn-sm flex-nowrap"
                     :disabled="examinee.status !== 'Completed'"

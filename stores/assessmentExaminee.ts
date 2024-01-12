@@ -2,6 +2,7 @@ import type {
   CreateAssessmentExamineePayload,
   AssessmentExaminee,
   AssessmentExamineePaginated,
+  ExamineePayload,
 } from "@/types/assessmentExaminee";
 import type { AssessmentExaminees } from "@/types/assessment";
 
@@ -90,11 +91,14 @@ export const useAssessmentExamineeStore = defineStore(
       return result;
     };
 
-    const getAssessmentExaminee = async (id: number) => {
+    const getAssessmentExaminee = async (
+      id: number,
+      retrieveCompleted = true
+    ) => {
       const nuxtApp = useNuxtApp();
 
       const result = await useAPI<AssessmentExaminee>(
-        `/assessment-examinees/${id}`,
+        `/assessment-examinees/${id}?retrieve_completed=${retrieveCompleted}`,
         {
           getCachedData: (key) => {
             return nuxtApp.static.data[key] ?? nuxtApp.payload.data[key];
@@ -118,6 +122,35 @@ export const useAssessmentExamineeStore = defineStore(
       return result;
     };
 
+    const incrementRetryCount = async (id: number, pin: string) => {
+      const result = await useAPI(`/increment-retry-count/${id}`, {
+        method: "patch",
+        body: {
+          pin,
+        },
+      });
+
+      return result;
+    };
+
+    const updateExamineeAssessment = async (
+      id: number,
+      payload: ExamineePayload
+    ) => {
+      const result = await useAPI<AssessmentExaminee>(
+        `/assessment-examinees/${id}`,
+        {
+          method: "put",
+          body: payload,
+          transform: (data: any) => {
+            return data.data as AssessmentExaminee;
+          },
+        }
+      );
+
+      return result;
+    };
+
     return {
       assessmentExaminees,
       createAssessmentExaminees,
@@ -126,6 +159,8 @@ export const useAssessmentExamineeStore = defineStore(
       getAssessmentExaminee,
       initialData,
       removeAssessmentExaminee,
+      incrementRetryCount,
+      updateExamineeAssessment,
     };
   }
 );

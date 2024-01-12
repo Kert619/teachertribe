@@ -32,7 +32,7 @@
       <div
         class="col-span-12 sm:col-span-3 flex flex-col overflow-auto bg-white min-h-[300px]"
       >
-        <div class="p-3">
+        <div class="p-3 bg-gray-100">
           <ClientOnly>
             <VSelectInput name="problem" v-model="problemId">
               <option
@@ -54,13 +54,12 @@
             ></div>
           </ClientOnly>
         </div>
-        <div
-          class="bg-primary-500 p-3"
-          v-if="authStore.assessmentExaminee?.assessment.time_restriction"
-        >
+        <div class="bg-primary-500 p-3">
           <TestTimer
-            :total-minutes="authStore.assessmentExaminee?.assessment.setup_time"
-            :started-on="authStore.assessmentExaminee.started_on"
+            :time-restriction="!!authStore.assessmentExaminee!.assessment.time_restriction"
+            :total-minutes="authStore.assessmentExaminee!.assessment.setup_time"
+            :started-on="authStore.assessmentExaminee!.started_on"
+            @time-out="handleTimeOut"
           />
         </div>
       </div>
@@ -76,8 +75,10 @@
               :line-nums="true"
               v-model="code"
               :languages="editorLanguages"
-              :header="false"
               :key="editorKey"
+              @copy="handleCopyPaste"
+              @paste="handleCopyPaste"
+              @cut="handleCopyPaste"
             ></CodeEditor>
           </ClientOnly>
         </div>
@@ -99,7 +100,7 @@
       <div
         class="col-span-12 sm:col-span-3 bg-white min-h-[300px] flex flex-col overflow-auto"
       >
-        <h4 class="p-3 border text-center">RESULT</h4>
+        <h4 class="p-3 text-center bg-gray-100">RESULT</h4>
         <div class="p-3 grow overflow-auto">
           <TestResultList :test-cases="problemTestCases" />
         </div>
@@ -127,6 +128,7 @@ import CodeEditor from "simple-code-editor";
 import type { BaseExamType, BaseProblem } from "@/types/common";
 import type { TestCase } from "@/types/testcase";
 import type { Answer } from "@/types/answer";
+import Swal from "sweetalert2";
 
 useHead({
   title: "Teacher Tribe",
@@ -147,15 +149,7 @@ definePageMeta({
 const authStore = useAuthStore();
 const testCases = useTestCases();
 const answerStore = useAnswerStore();
-
-if (process.client && authStore.assessmentExaminee?.assessment.window_proctor) {
-  document.addEventListener("visibilitychange", function () {
-    if (document.hidden) {
-      authStore.pin = null;
-      window.location.reload();
-    }
-  });
-}
+const assessmentExamineeStore = useAssessmentExamineeStore();
 
 const loading = ref(false);
 const errorSubmit = ref(false);
@@ -176,6 +170,48 @@ const editorLanguages = computed(() => {
   const examType = languages.value.find(
     (lang) => lang.id === Number(examTypeId.value)
   );
+
+  if (process.client && authStore.assessmentExaminee?.test_mode === "Secure") {
+    document.addEventListener("visibilitychange", async () => {
+      if (document.hidden) {
+        if (authStore.assessmentExaminee?.retry_count === 2) {
+          loading.value = true;
+          const { data } = await assessmentExamineeStore.finishTest(
+            Number(authStore.assessmentExaminee!.id),
+            authStore.pin!
+          );
+          loading.value = false;
+
+          if (data.value) {
+            await Swal.fire({
+              title: "Test Finished",
+              text: "Thanks for taking the test",
+              icon: "success",
+            });
+
+            authStore.pin = null;
+            await navigateTo("https://www.coderstribe.net", {
+              replace: true,
+              external: true,
+            });
+          }
+        } else {
+          loading.value = true;
+          const { error } = await assessmentExamineeStore.incrementRetryCount(
+            authStore.assessmentExaminee!.id,
+            authStore.assessmentExaminee!.pin
+          );
+          loading.value = false;
+          if (!error.value) authStore.assessmentExaminee!.retry_count++;
+          await Swal.fire({
+            title: "SWITCH WINDOW DETECTED",
+            text: "Please do not switch window during assessment.",
+            icon: "warning",
+          });
+        }
+      }
+    });
+  }
 
   if (examType) {
     if (examType.exam_type === "CSS") return [["css", "CSS"]];
@@ -265,5 +301,36 @@ const validateCode = async () => {
   if (error.value) errorSubmit.value = true;
 
   problemTestCases.value = result;
+};
+
+const handleCopyPaste = (e: Event) => {
+  if (authStore.assessmentExaminee?.assessment.window_proctor)
+    e.preventDefault();
+};
+
+const handleTimeOut = async () => {
+  if (authStore.assessmentExaminee?.assessment.time_restriction) {
+    loading.value = true;
+    const { data } = await assessmentExamineeStore.finishTest(
+      Number(authStore.assessmentExaminee!.id),
+      authStore.pin!
+    );
+    loading.value = false;
+
+    if (data.value) {
+      authStore.pin = null;
+
+      await Swal.fire({
+        title: "Test Finished",
+        text: "Thanks for taking the test",
+        icon: "success",
+      });
+
+      await navigateTo("https://www.coderstribe.net", {
+        replace: true,
+        external: true,
+      });
+    }
+  }
 };
 </script>

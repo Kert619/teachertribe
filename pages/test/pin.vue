@@ -43,9 +43,9 @@ const submitForm = async (values: any, { setFieldError }: any) => {
   loading.value = false;
   if (data.value) {
     if (data.value.started_on) {
-      await navigateTo("/test");
+      await navigateTo("/test", { replace: true });
     } else {
-      await navigateTo("/test/examinee-details");
+      await navigateTo("/test/examinee-details", { replace: true });
     }
   } else {
     setFieldError("pin", "Invalid test pin");
