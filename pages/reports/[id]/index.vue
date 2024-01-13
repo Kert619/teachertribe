@@ -2,7 +2,7 @@
   <div>
     <ErrorStatus v-if="error" />
     <template v-else-if="data">
-      <div class="shadow-normal p-3 my-3">
+      <div class="my-3">
         <h2 class="underline mb-5">{{ data.assessment.assessment_title }}</h2>
 
         <h3 class="text-primary-500 font-bold mb-3 border-b-2">
@@ -54,12 +54,14 @@
             <span>{{
               data.assessment.setup_time +
               " " +
-              (data.assessment.setup_time > 0 ? "Minutes" : "Minute")
+              (data.assessment.setup_time > 1 ? "Minutes" : "Minute")
             }}</span>
           </p>
           <p class="bg-gray-200 p-3">
             <span class="font-bold">Time taken for completing the test: </span>
-            <span>{{ timeTaken(data.started_on, data.finished_on) }}</span>
+            <span>{{
+              timeTaken.calculate(data.started_on, data.finished_on)
+            }}</span>
           </p>
           <p class="bg-gray-200 p-3">
             <span class="font-bold">PIN: </span>
@@ -72,47 +74,16 @@
           <p class="bg-gray-200 p-3">
             <span class="font-bold">Created On: </span>
             <span>
-              {{
-                new Date(data.assessment.created_at).toLocaleString("en-PH", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second: "2-digit",
-                })
-              }}</span
+              {{ dateTimeFormat.format(data.assessment.created_at) }}</span
             >
           </p>
           <p class="bg-gray-200 p-3">
             <span class="font-bold">Started on: </span>
-            <span>
-              {{
-                new Date(data.started_on).toLocaleString("en-PH", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second: "2-digit",
-                })
-              }}</span
-            >
+            <span> {{ dateTimeFormat.format(data.started_on) }}</span>
           </p>
           <p class="bg-gray-200 p-3">
             <span class="font-bold">Finished on: </span>
-            <span>
-              {{
-                new Date(data.finished_on).toLocaleString("en-PH", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second: "2-digit",
-                })
-              }}</span
-            >
+            <span> {{ dateTimeFormat.format(data.finished_on) }}</span>
           </p>
           <p class="bg-gray-200 p-3">
             <span class="font-bold">Test status: </span>
@@ -137,7 +108,7 @@
         </div>
       </div>
 
-      <div class="shadow-normal p-3 my-3 overflow-auto">
+      <div class="my-3 overflow-auto">
         <div class="flex flex-nowrap gap-8">
           <div class="grow flex flex-col gap-3">
             <h4 class="font-bold text-primary-400 whitespace-nowrap">
@@ -201,8 +172,9 @@
 
       <div class="mt-5 flex flex-wrap justify-center gap-3">
         <button class="btn" @click="handleBack">Back</button>
-        <button class="btn btn-primary">Examinee Overview</button>
-        <button class="btn btn-primary">Assessment Report</button>
+        <NuxtLink :to="`/reports/${id}/assessment`" class="btn btn-primary"
+          >Assessment Report</NuxtLink
+        >
       </div>
     </template>
   </div>
@@ -214,6 +186,7 @@ import type { BaseProblem } from "@/types/common";
 const assessmentExamineeStore = useAssessmentExamineeStore();
 const route = useRoute();
 const router = useRouter();
+const dateTimeFormat = useDateTimeFormat();
 
 const id = route.params.id as string;
 
@@ -225,22 +198,7 @@ useHead({
   title: "Teacher Tribe - Reports",
 });
 
-const timeTaken = (startedOn: string, finishedOn: string) => {
-  const from = new Date(startedOn).getTime();
-  const to = new Date(finishedOn).getTime();
-
-  const timeDiff = (to - from) / 1000;
-
-  let hours = Math.floor(timeDiff / 3600).toString();
-  let minutes = Math.floor((timeDiff % 3600) / 60).toString();
-  let seconds = Math.floor(timeDiff % 60).toString();
-
-  if (Number(hours) < 10) hours = "0" + hours;
-  if (Number(minutes) < 10) minutes = "0" + minutes;
-  if (Number(seconds) < 10) seconds = "0" + seconds;
-
-  return `${hours}:${minutes}:${seconds}`;
-};
+const timeTaken = useTimeTaken();
 
 const handleBack = async () => {
   if (!window.history.state.back) {

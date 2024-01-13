@@ -176,25 +176,18 @@ const editorLanguages = computed(() => {
       if (document.hidden) {
         if (authStore.assessmentExaminee?.retry_count === 2) {
           loading.value = true;
-          const { data } = await assessmentExamineeStore.finishTest(
+          await assessmentExamineeStore.finishTest(
             Number(authStore.assessmentExaminee!.id),
             authStore.pin!
           );
           loading.value = false;
 
-          if (data.value) {
-            await Swal.fire({
-              title: "Test Finished",
-              text: "Thanks for taking the test",
-              icon: "success",
-            });
+          authStore.pin = null;
 
-            authStore.pin = null;
-            await navigateTo("https://www.coderstribe.net", {
-              replace: true,
-              external: true,
-            });
-          }
+          await navigateTo("https://www.coderstribe.net", {
+            replace: true,
+            external: true,
+          });
         } else {
           loading.value = true;
           const { error } = await assessmentExamineeStore.incrementRetryCount(
