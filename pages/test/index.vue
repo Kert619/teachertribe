@@ -174,33 +174,35 @@ const editorLanguages = computed(() => {
   if (process.client && authStore.assessmentExaminee?.test_mode === "Secure") {
     document.addEventListener("visibilitychange", async () => {
       if (document.hidden) {
-        if (authStore.assessmentExaminee?.retry_count === 2) {
-          loading.value = true;
-          await assessmentExamineeStore.finishTest(
-            Number(authStore.assessmentExaminee!.id),
-            authStore.pin!
-          );
-          loading.value = false;
+        if (!loading.value) {
+          if (authStore.assessmentExaminee!.retry_count < 2) {
+            loading.value = true;
+            authStore.assessmentExaminee!.retry_count++;
+            await assessmentExamineeStore.incrementRetryCount(
+              authStore.assessmentExaminee!.id,
+              authStore.assessmentExaminee!.pin
+            );
+            loading.value = false;
+            await Swal.fire({
+              title: "SWITCH WINDOW DETECTED",
+              text: "Please do not switch window during assessment.",
+              icon: "warning",
+            });
+          } else {
+            loading.value = true;
+            await assessmentExamineeStore.finishTest(
+              Number(authStore.assessmentExaminee!.id),
+              authStore.pin!
+            );
+            loading.value = false;
 
-          authStore.pin = null;
+            authStore.pin = null;
 
-          await navigateTo("https://www.coderstribe.net", {
-            replace: true,
-            external: true,
-          });
-        } else {
-          loading.value = true;
-          const { error } = await assessmentExamineeStore.incrementRetryCount(
-            authStore.assessmentExaminee!.id,
-            authStore.assessmentExaminee!.pin
-          );
-          loading.value = false;
-          if (!error.value) authStore.assessmentExaminee!.retry_count++;
-          await Swal.fire({
-            title: "SWITCH WINDOW DETECTED",
-            text: "Please do not switch window during assessment.",
-            icon: "warning",
-          });
+            await navigateTo("https://www.coderstribe.net", {
+              replace: true,
+              external: true,
+            });
+          }
         }
       }
     });
