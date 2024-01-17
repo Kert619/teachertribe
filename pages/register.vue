@@ -119,7 +119,7 @@ const schema = yup.object({
   q5: yup.string().required("Please answer this question"),
   q6: yup.string().required("Please answer this question"),
   q7: yup.string().required("Please answer this question"),
-  q8: yup.boolean().required("Please answer this question"),
+  q8: yup.boolean().typeError("Please answer this question"),
   q9: yup.string().required("Please answer this question"),
   q10: yup.string().required("Please answer this question"),
 });
