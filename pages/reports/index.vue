@@ -3,13 +3,19 @@
     <div class="space-x-3">
       <div class="flex items-center gap-3 max-w-lg">
         <span>Filter by:</span>
-        <div class="grow">
+        <div class="grow flex flex-wrap gap-3">
           <VTextInput
             name="search"
             size="input-sm"
             placeholder="Search assessment, email"
             v-model="search"
           />
+          <NuxtLink
+            to="/reports/responses"
+            class="btn btn-sm btn-link text-primary-400"
+          >
+            View Responses
+          </NuxtLink>
         </div>
       </div>
     </div>
