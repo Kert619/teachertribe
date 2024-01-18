@@ -404,6 +404,113 @@ export function useTestCases() {
         return testCases;
       },
     },
+    {
+      problem_name: "STATIC PAGE",
+      validate(code: string): TestCase[] {
+        const testCases = [
+          {
+            name: "Body bg color",
+            passed: false,
+            score: 1,
+          },
+          {
+            name: "H1 alignment and color",
+            passed: false,
+            score: 1,
+          },
+          {
+            name: "Textarea font family and color",
+            passed: false,
+            score: 1,
+          },
+          {
+            name: "Anchor tag decoration",
+            passed: false,
+            score: 1,
+          },
+          {
+            name: "Div padding",
+            passed: false,
+            score: 1,
+          },
+          {
+            name: "Class alignment",
+            passed: false,
+            score: 1,
+          },
+          {
+            name: "Div minimum height",
+            passed: false,
+            score: 1,
+          },
+          {
+            name: "Div maximum height",
+            passed: false,
+            score: 1,
+          },
+          {
+            name: "Div overflow",
+            passed: false,
+            score: 1,
+          },
+          {
+            name: "Div width and border",
+            passed: false,
+            score: 1,
+          },
+        ];
+
+        try {
+          const rulesTestCases = [
+            `body{
+              background-color: rgb(128,128,128);
+            }`,
+            `h1{
+              text-align:center;
+              color: rgb(0,255,255);
+              }`,
+            `textarea#textarea1{
+              font-family: Arial;
+              color: rgb(0,0,255);
+              }`,
+            `a{
+              text-decoration:none;
+              }`,
+            `div#div1{
+              padding:20px;
+              }`,
+            `.class1{
+              text-align:right;
+              }
+              `,
+            `div#div2{
+              min-height:10px;
+              }`,
+            `div#div3{
+              max-height:20px;
+              }
+              `,
+            `div#div4{
+              overflow:scroll;
+              }`,
+            `div#div5{
+              width:250px;
+              border-width:2px;
+              border-style:solid;
+              }`,
+          ];
+
+          const userRules = parse(code).stylesheet!.rules;
+          for (let i = 0; i < rulesTestCases.length; i++) {
+            const testCaseRules = parse(rulesTestCases[i]).stylesheet!.rules;
+            const isMatch = compareRules(userRules, testCaseRules);
+            testCases[i].passed = isMatch;
+          }
+        } catch (error) {}
+
+        return testCases;
+      },
+    },
   ];
 
   const selectProblem = (problem: string) => {
@@ -414,30 +521,38 @@ export function useTestCases() {
 }
 
 const compareRules = (userRules: Rule[], testCaseRules: Rule[]) => {
-  let isMatch = false;
-  testCaseRules.forEach((testCaseRule) => {
-    const testCaseSelector = normalizeWhitespace(
-      testCaseRule.selectors
-    )?.trim();
-    userRules.forEach((userRule) => {
-      const userSelector = normalizeWhitespace(userRule.selectors)?.trim();
-      if (userSelector?.trim() === testCaseSelector?.trim()) {
-        isMatch = !!testCaseRule.declarations?.every((x: Declaration) =>
-          userRule.declarations?.some(
-            (y: Declaration) =>
-              x.property?.trim() === y.property?.trim() &&
-              x.value?.trim() === y.value?.trim()
-          )
-        );
-      }
+  try {
+    let isMatch = false;
+    testCaseRules.forEach((testCaseRule) => {
+      const testCaseSelector = normalizeWhitespace(
+        testCaseRule.selectors!
+      ).trim();
+      userRules.forEach((userRule) => {
+        const userSelector = normalizeWhitespace(userRule.selectors!).trim();
+        if (userSelector!.trim() === testCaseSelector!.trim()) {
+          isMatch = !!testCaseRule.declarations?.every((x: Declaration) =>
+            userRule.declarations?.some(
+              (y: Declaration) =>
+                x.property!.trim() === y.property!.trim() &&
+                removeWhitespace(x.value!) === removeWhitespace(y.value!)
+            )
+          );
+        }
+      });
     });
-  });
 
-  return isMatch;
+    return isMatch;
+  } catch (error) {
+    return false;
+  }
 };
 
-const normalizeWhitespace = (str?: string[]): string | undefined => {
-  return str?.map((s) => s.replace(/\s+/g, " ").trim()).join(", ");
+const normalizeWhitespace = (str: string[]): string => {
+  return str.map((s) => s.replace(/\s+/g, " ").trim()).join(", ");
+};
+
+const removeWhitespace = (str: string) => {
+  return str.replace(/\s/g, "");
 };
 
 const sanatizeCode = (code: string) => {

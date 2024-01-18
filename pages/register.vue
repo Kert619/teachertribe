@@ -121,7 +121,7 @@ const schema = yup.object({
   school: yup.string().required().max(255).label("School"),
   course: yup.string().required().max(255).label("Course"),
   year_level: yup.string().required().max(255).label("Year Level"),
-  email: yup.string().required().email().max(255).label("email"),
+  email: yup.string().required().email().max(255).label("Email"),
   contact: yup.string().required().max(255).label("Contact"),
   q1: yup.string().required("Please answer this question"),
   q2: yup.string().required("Please answer this question"),
