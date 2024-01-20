@@ -588,13 +588,15 @@ export function useTestCases() {
           }
         }
 
-        const form = htmlBody.querySelector("form");
-        if (
-          form?.method.toUpperCase().trim() === "POST" &&
-          form?.getAttribute("action")?.trim() === ""
-        ) {
-          const button = form.querySelector("button");
-          if (button?.type === "submit") testCases[2].passed = true;
+        const form = htmlBody.querySelector<HTMLFormElement>("form#form1");
+        if (form) {
+          if (
+            form.method.toUpperCase().trim() === "POST" &&
+            form.getAttribute("action")?.trim() === ""
+          ) {
+            const button = form.querySelector("button");
+            if (button?.type === "submit") testCases[2].passed = true;
+          }
 
           const inputRequired =
             form.querySelector<HTMLInputElement>("input#textid1");
