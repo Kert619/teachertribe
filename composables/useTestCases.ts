@@ -588,11 +588,12 @@ export function useTestCases() {
           }
         }
 
-        const form = htmlBody.querySelector<HTMLFormElement>("form#form1");
+        const form = htmlBody.querySelector<HTMLFormElement>("form");
         if (form) {
           if (
             form.method.toUpperCase().trim() === "POST" &&
-            form.getAttribute("action")?.trim() === ""
+            form.getAttribute("action")?.trim() === "" &&
+            form.id === "form1"
           ) {
             const button = form.querySelector("button");
             if (button?.type === "submit") testCases[2].passed = true;
