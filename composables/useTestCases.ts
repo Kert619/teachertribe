@@ -511,6 +511,137 @@ export function useTestCases() {
         return testCases;
       },
     },
+    {
+      problem_name: "Form Page",
+      validate: (code: string): TestCase[] => {
+        const testCases = [
+          { name: "Dropdown list", passed: false, score: 2 },
+          { name: "Editable list", passed: false, score: 2 },
+          { name: "Form action", passed: false, score: 2 },
+          { name: "Form input", passed: false, score: 2 },
+          { name: "Form input pattern", passed: false, score: 2 },
+          { name: "Form input color", passed: false, score: 2 },
+          { name: "Form input date", passed: false, score: 2 },
+          { name: "Form input email", passed: false, score: 2 },
+          { name: "Form input file", passed: false, score: 2 },
+          { name: "Form input hidden", passed: false, score: 2 },
+        ];
+
+        const parser = new DOMParser();
+        const htmlBody = parser.parseFromString(code, "text/html").body;
+
+        const select = htmlBody.querySelector("select");
+        if (select?.name === "selectgroup") {
+          const optGroup = Array.from(select.querySelectorAll("optgroup"));
+          if (optGroup.length === 3) {
+            const groupA = optGroup[0];
+            const groupB = optGroup[1];
+            const groupC = optGroup[2];
+
+            const groupAOptions = Array.from(groupA.querySelectorAll("option"));
+            const groupBOptions = Array.from(groupB.querySelectorAll("option"));
+            const groupCOptions = Array.from(groupC.querySelectorAll("option"));
+
+            if (
+              groupA.label === "Group A" &&
+              groupAOptions.length === 2 &&
+              groupB.label === "Group B" &&
+              groupBOptions.length === 2 &&
+              groupC.label === "Group C" &&
+              groupCOptions.length === 2
+            ) {
+              const aa = groupAOptions[0];
+              const ab = groupAOptions[1];
+              const ba = groupBOptions[0];
+              const bb = groupBOptions[1];
+              const ca = groupCOptions[0];
+              const cb = groupCOptions[1];
+              if (
+                aa.textContent === "AA" &&
+                ab.textContent === "AB" &&
+                ba.textContent === "BA" &&
+                bb.textContent === "BB" &&
+                ca.textContent === "CA" &&
+                cb.textContent === "CB"
+              )
+                testCases[0].passed = true;
+            }
+          }
+        }
+
+        const ul = htmlBody.querySelector("ul");
+        if (ul) {
+          const li = Array.from(ul.querySelectorAll("li"));
+          if (li.length === 3) {
+            const a = li[0];
+            const b = li[1];
+            const c = li[2];
+            if (
+              a.contentEditable === "true" &&
+              a.textContent === "A" &&
+              b.contentEditable === "true" &&
+              b.textContent === "B" &&
+              c.contentEditable === "true" &&
+              c.textContent === "C"
+            )
+              testCases[1].passed = true;
+          }
+        }
+
+        const form = htmlBody.querySelector("form");
+        if (
+          form?.method.toUpperCase().trim() === "POST" &&
+          form?.getAttribute("action")?.trim() === ""
+        ) {
+          const button = form.querySelector("button");
+          if (button?.type === "submit") testCases[2].passed = true;
+
+          const inputRequired =
+            form.querySelector<HTMLInputElement>("input#textid1");
+
+          if (inputRequired?.type === "text" && inputRequired.required)
+            testCases[3].passed = true;
+
+          const inputPatternRequired =
+            form.querySelector<HTMLInputElement>("input#textid2");
+
+          if (
+            inputPatternRequired?.type === "text" &&
+            inputPatternRequired.required &&
+            (inputPatternRequired.pattern === "[A-Za-z]{6,10}" ||
+              inputPatternRequired.pattern === "[a-zA-Z]{6,10}")
+          )
+            testCases[4].passed = true;
+
+          const inputColor =
+            form.querySelector<HTMLInputElement>("input#icolor1");
+
+          if (inputColor?.type === "color") testCases[5].passed = true;
+
+          const inputDate =
+            form.querySelector<HTMLInputElement>("input#idate1");
+
+          if (inputDate?.type === "date") testCases[6].passed = true;
+
+          const inputEmail =
+            form.querySelector<HTMLInputElement>("input#iemail1");
+
+          if (inputEmail?.type === "email") testCases[7].passed = true;
+
+          const inputFile =
+            form.querySelector<HTMLInputElement>("input#ifile1");
+
+          if (inputFile?.type === "file") testCases[8].passed = true;
+
+          const inputHidden =
+            form.querySelector<HTMLInputElement>("input#ihidden1");
+
+          if (inputHidden?.type === "hidden") testCases[9].passed = true;
+        }
+
+        return testCases;
+      },
+    },
   ];
 
   const selectProblem = (problem: string) => {
